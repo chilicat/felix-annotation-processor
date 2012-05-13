@@ -1,0 +1,38 @@
+<idea-plugin version="2">
+    <name>Felix SCR Annotation Processor</name>
+    <description>A compiler extension to generate a service component XMl for Felix SCR annotated classes. Compiler
+        output will contain the service component XML. The service component XML will be added to a existing MANIFEST.MF
+    </description>
+    <version>0.1</version>
+    <vendor>chilicat.net</vendor>
+
+    <!--<idea-version since-build="99.18"/>-->
+
+    <!--<depends>com.intellij.modules.xml</depends>-->
+    <!--<depends>com.intellij.properties</depends>-->
+    <depends>com.intellij.modules.lang</depends>
+
+
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <component>
+            <implementation-class>net.chilicat.felixscr.intellij.ScrComponent</implementation-class>
+        </component>
+    </project-components>
+
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+
+    <extensions defaultExtensionNs="com.intellij">
+        <compiler implementation="net.chilicat.felixscr.intellij.build.ScrCompiler"/>
+        <projectConfigurable instance="net.chilicat.felixscr.intellij.ScrConfigurable"/>
+        <projectService serviceImplementation="net.chilicat.felixscr.intellij.ScrSettings"/>
+    </extensions>
+
+</idea-plugin>
