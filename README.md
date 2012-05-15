@@ -2,6 +2,9 @@
 The plugin will add a compiler plugin to the IntelliJ build chain which will detect if a module uses Felix SCR annotations.
 In case the compiling module uses Felix SCR annotations it will create a service component XML and add it to the MANIFEST.MF.
 
+# Instalation and Usage
+See [wiki page](https://github.com/chilicat/felix-annotation-processor/wiki/Installation-and-Usage)
+
 # How does it work
 As a User you just have to add the Felix SCR Annotations (1.6.0) as a dependecy to your Module and hit the make button. The output
 directory will contain the generated service component XML. The service component XML will be added to the MANIFEST.MF as Service-Component.
@@ -26,3 +29,12 @@ The plugin doesn't support JavaDoc parsing.
 # Thanks To
 Thanks to [arikkfir](https://github.com/arikkfir) for sharing his project [Apache-Felix-IntelliJ-Plugin](https://github.com/arikkfir/Apache-Felix-IntelliJ-Plugin)
 which works really well for Maven Projects. It helped me to write this little plugin.
+
+# License
+Copyright (c) 2012 <chilicat.dev>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
