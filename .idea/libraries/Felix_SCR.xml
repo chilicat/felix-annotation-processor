@@ -2,7 +2,6 @@
   <library name="Felix SCR">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/libs/org.apache.felix.scr.ant-1.1.4.jar!/" />
-      <root url="jar://$PROJECT_DIR$/libs/org.apache.felix.scr.annotations-1.6.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

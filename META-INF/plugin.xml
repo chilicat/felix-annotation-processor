@@ -6,17 +6,19 @@
 
     <name>Felix SCR Annotation Processor</name>
     <description>
-        The compiler plugin will look in the dependency graph of the module (which will be currently compiled) if class
+        [ALPHA] The compiler plugin will look in the dependency graph of the module (which will be currently compiled) if class
         "org.apache.felix.scr.annotations.Component"
         is available. In case the class is available the plugin assumes that Felix SCR annotations are in use. The
         service component xml will be created and added to
-        the manifest in the build output. If no manifest exists it will print a warning tat the service component XML
-        couldn't be added.
+        the manifest in the build output.
     </description>
     <version>0.1</version>
     <vendor url="https://github.com/chilicat/felix-annotation-processor">chilicat.net</vendor>
 
+
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
+
 
     <application-components>
         <!-- Add your application components here -->
