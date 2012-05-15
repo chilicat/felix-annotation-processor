@@ -22,23 +22,27 @@ public class ScrConfigurable implements SearchableConfigurable, Configurable.NoS
     private final Project project;
 
     private JCheckBox enabledBox;
+    private JCheckBox strictModeBox;
     private JComponent container;
 
     public ScrConfigurable(@NotNull Project project) {
 
         this.project = project;
 
-        enabledBox = new JCheckBox("Enable Felix Annotation Processor");
-        enabledBox.setSelected(true);
-        enabledBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                modified = true;
-            }
-        });
+        enabledBox = createBox("Enable Felix Annotation Processor");
+        strictModeBox = createBox("Strict Mode");
 
         Box box = Box.createVerticalBox();
         box.add(enabledBox);
+        box.add(strictModeBox);
         container = box;
+    }
+
+    private JCheckBox createBox(String name) {
+        ModifyUpdateListener modifyUpdateListener = new ModifyUpdateListener();
+        JCheckBox box = new JCheckBox(name);
+        box.addItemListener(modifyUpdateListener);
+        return box;
     }
 
     @NotNull
@@ -74,16 +78,24 @@ public class ScrConfigurable implements SearchableConfigurable, Configurable.NoS
     public void apply() throws ConfigurationException {
         ScrSettings settingsState = ScrSettings.getInstance(project);
         settingsState.setEnabled(enabledBox.isSelected());
+        settingsState.setStrictMode(strictModeBox.isSelected());
         modified = false;
     }
 
     public void reset() {
         ScrSettings settingsState = ScrSettings.getInstance(project);
         enabledBox.setSelected(settingsState.isEnabled());
+        strictModeBox.setSelected(settingsState.isStrictMode());
         modified = false;
     }
 
     public void disposeUIResources() {
+        // Noting to do.
+    }
 
+    private class ModifyUpdateListener implements ItemListener {
+        public void itemStateChanged(ItemEvent itemEvent) {
+            modified = true;
+        }
     }
 }

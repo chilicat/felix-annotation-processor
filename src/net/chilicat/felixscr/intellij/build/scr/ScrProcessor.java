@@ -33,11 +33,20 @@ public class ScrProcessor {
     private final CompileContext context;
     private final Module module;
     private final String outputDir;
+    private boolean strictMode = true;
 
     public ScrProcessor(CompileContext context, Module module, String outputDir) {
         this.context = context;
         this.module = module;
         this.outputDir = outputDir;
+    }
+
+    public boolean isStrictMode() {
+        return strictMode;
+    }
+
+    public void setStrictMode(boolean strictMode) {
+        this.strictMode = strictMode;
     }
 
     public CompileContext getContext() {

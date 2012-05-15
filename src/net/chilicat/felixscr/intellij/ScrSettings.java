@@ -16,6 +16,15 @@ import org.jetbrains.annotations.NotNull;
 public class ScrSettings implements PersistentStateComponent<ScrSettings> {
 
     private boolean enabled = true;
+    private boolean strictMode = true;
+
+    public boolean isStrictMode() {
+        return strictMode;
+    }
+
+    public void setStrictMode(boolean strictMode) {
+        this.strictMode = strictMode;
+    }
 
     public boolean isEnabled() {
         return enabled;

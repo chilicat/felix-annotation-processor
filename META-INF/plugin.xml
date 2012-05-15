@@ -12,7 +12,7 @@
         service component xml will be created and added to
         the manifest in the build output.
     </description>
-    <version>0.1</version>
+    <version>0.2</version>
     <vendor url="https://github.com/chilicat/felix-annotation-processor">chilicat.net</vendor>
 
 

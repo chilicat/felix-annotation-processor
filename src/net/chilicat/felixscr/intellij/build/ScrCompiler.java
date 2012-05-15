@@ -29,6 +29,9 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
     public ProcessingItem[] process(CompileContext context, ProcessingItem[] processingItems) {
         final CompileScope compileScope = getScope(context);
 
+        ScrSettings instance = ScrSettings.getInstance(context.getProject());
+        final boolean strictMode = instance.isStrictMode();
+
         for (final Module module : compileScope.getAffectedModules()) {
 
             if (ScrProcessor.accept(module)) {
@@ -45,6 +48,7 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
 
                 try {
                     ScrProcessor scrProcessor = new ScrProcessor(context, module, outputDir);
+                    scrProcessor.setStrictMode(strictMode);
                     scrProcessor.execute();
                 } catch (RuntimeException e) {
                     context.addMessage(CompilerMessageCategory.ERROR, e.getLocalizedMessage(), null, 0, 0);
