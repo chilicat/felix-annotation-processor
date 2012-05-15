@@ -4,7 +4,6 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.compiler.*;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.chilicat.felixscr.intellij.ScrSettings;
 import net.chilicat.felixscr.intellij.build.scr.ScrProcessor;
@@ -32,23 +31,31 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
 
         for (final Module module : compileScope.getAffectedModules()) {
 
-            final String outputDir = getOutputPath(context, module);
-
-            if (outputDir == null) {
-                context.addMessage(CompilerMessageCategory.ERROR, "Cannot resolve compiler output path", null, -1, -1);
-                continue;
-            }
-
             if (ScrProcessor.accept(module)) {
-                ScrProcessor scrProcessor = new ScrProcessor(context, module, outputDir);
-                scrProcessor.execute();
+
+                context.getProgressIndicator().setText("Felix SCR generation for " + module.getName());
+
+
+                final String outputDir = getOutputPath(context, module);
+
+                if (outputDir == null) {
+                    context.addMessage(CompilerMessageCategory.ERROR, "Compiler Output path must be set for: " + module.getName(), null, -1, -1);
+                    continue;
+                }
+
+                try {
+                    ScrProcessor scrProcessor = new ScrProcessor(context, module, outputDir);
+                    scrProcessor.execute();
+                } catch (RuntimeException e) {
+                    context.addMessage(CompilerMessageCategory.ERROR, e.getLocalizedMessage(), null, 0, 0);
+                }
             }
         }
 
         return processingItems;
     }
 
-    private String getOutputPath(CompileContext ctx, Module module) {
+    public static String getOutputPath(CompileContext ctx, Module module) {
         final VirtualFile dir = ctx.getModuleOutputDirectory(module);
         return dir == null ? null : dir.getPath();
     }
@@ -86,12 +93,12 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
         @Override
         protected void run(Result<ProcessingItem[]> result) throws Throwable {
             result.setResult(ProcessingItem.EMPTY_ARRAY);
-
-            ScrSettings instance = ScrSettings.getInstance(ProjectManager.getInstance().getDefaultProject());
-
+            ScrSettings instance = ScrSettings.getInstance(context.getProject());
             if (instance.isEnabled()) {
                 for (final Module module : compileScope.getAffectedModules()) {
-                    result.setResult(new ProcessingItem[]{new MyProcessingItem(module)});
+                    if (ScrProcessor.accept(module)) {
+                        result.setResult(new ProcessingItem[]{new MyProcessingItem(module)});
+                    }
                 }
             }
         }

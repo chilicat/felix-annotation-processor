@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
+import net.chilicat.felixscr.intellij.build.ScrCompiler;
 import org.apache.felix.scrplugin.JavaClassDescriptorManager;
 import org.apache.felix.scrplugin.SCRDescriptorException;
 import org.apache.felix.scrplugin.SCRDescriptorFailureException;
@@ -77,12 +78,16 @@ public class ScrProcessor {
 
         try {
             final File classDir = new File(this.getOutputDir());
-            final ClassLoader classLoader = createClassLoader(classDir);
+
+            final Collection<String> classPath = new LinkedHashSet<String>();
+            classPath.add(classDir.getPath());
+            collectClasspath(this.getModule(), classPath);
+            ArrayList<String> classPath1 = new ArrayList<String>(classPath);
+            final ClassLoader classLoader = createClassLoader(classPath1);
 
             final FileSet sourceFiles = new FileSet(sourceRoots);
-            final List<String> classPath = createClasspath(this.getModule());
 
-            final JavaClassDescriptorManager descriptorManager = new ScrMrg(logger, classLoader, sourceFiles, classDir, classPath, new String[0], false, true);
+            final JavaClassDescriptorManager descriptorManager = new ScrMrg(logger, classLoader, sourceFiles, classDir, classPath1, new String[0], false, true);
 
             gen.setGenerateAccessors(true);
             gen.setDescriptorManager(descriptorManager);
@@ -160,24 +165,38 @@ public class ScrProcessor {
         return finalValue.toString();
     }
 
-    private ClassLoader createClassLoader(File classDir) throws MalformedURLException {
-        return new URLClassLoader(new URL[]{classDir.toURI().toURL()}, getClass().getClassLoader());
+    private ClassLoader createClassLoader(List<String> classPath) throws MalformedURLException {
+        URL[] urls = new URL[classPath.size()];
+        for (int i = 0; i < classPath.size(); i++) {
+            urls[i] = new File(classPath.get(i)).toURI().toURL();
+        }
+        return new URLClassLoader(urls, getClass().getClassLoader());
     }
 
-    private List<String> createClasspath(Module module) {
-        final Set<String> classPath = new HashSet<String>();
+    private void collectClasspath(Module module, Collection<String> classPath) {
         for (OrderEntry library : ModuleRootManager.getInstance(module).getOrderEntries()) {
             if (library instanceof LibraryOrderEntry) {
-                final Library lib = ((LibraryOrderEntry) library).getLibrary();
-                if (lib != null) {
-                    final VirtualFile[] files = lib.getFiles(OrderRootType.CLASSES);
-                    for (VirtualFile f : files) {
-                        classPath.add(VfsUtil.virtualToIoFile(f).getAbsolutePath());
+                LibraryOrderEntry libEntry = (LibraryOrderEntry) library;
+                if (libEntry.getScope().isForProductionCompile() || libEntry.getScope().isForProductionRuntime()) {
+                    final Library lib = libEntry.getLibrary();
+
+                    if (lib != null) {
+                        final VirtualFile[] files = lib.getFiles(OrderRootType.CLASSES);
+                        for (VirtualFile f : files) {
+                            classPath.add(VfsUtil.virtualToIoFile(f).getAbsolutePath());
+                        }
                     }
                 }
             }
         }
-        return new ArrayList<String>(classPath);
+
+        for (Module m : ModuleRootManager.getInstance(module).getDependencies()) {
+            String outputPath = ScrCompiler.getOutputPath(getContext(), m);
+            if (!classPath.contains(outputPath)) {
+                classPath.add(outputPath);
+                collectClasspath(m, classPath);
+            }
+        }
     }
 
 

@@ -39,6 +39,7 @@ public final class ScrMrg extends JavaClassDescriptorManager {
         return sourceFiles.iterator();
     }
 
+    /*
     @Override
     protected List<File> getDependencies() {
         ArrayList<File> files = new ArrayList<File>();
@@ -49,7 +50,7 @@ public final class ScrMrg extends JavaClassDescriptorManager {
             }
         }
         return files;
-    }
+    } */
 
     @Override
     public String getOutputDirectory() {
