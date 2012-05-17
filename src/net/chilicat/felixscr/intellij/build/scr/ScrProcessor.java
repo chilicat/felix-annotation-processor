@@ -14,7 +14,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import net.chilicat.felixscr.intellij.build.ScrCompiler;
-import org.apache.felix.scrplugin.JavaClassDescriptorManager;
+import net.chilicat.felixscr.intellij.settings.ScrSettings;
 import org.apache.felix.scrplugin.SCRDescriptorException;
 import org.apache.felix.scrplugin.SCRDescriptorFailureException;
 import org.apache.felix.scrplugin.SCRDescriptorGenerator;
@@ -33,20 +33,12 @@ public class ScrProcessor {
     private final CompileContext context;
     private final Module module;
     private final String outputDir;
-    private boolean strictMode = true;
+    private ScrSettings settings;
 
     public ScrProcessor(CompileContext context, Module module, String outputDir) {
         this.context = context;
         this.module = module;
         this.outputDir = outputDir;
-    }
-
-    public boolean isStrictMode() {
-        return strictMode;
-    }
-
-    public void setStrictMode(boolean strictMode) {
-        this.strictMode = strictMode;
     }
 
     public CompileContext getContext() {
@@ -61,6 +53,12 @@ public class ScrProcessor {
         return outputDir;
     }
 
+
+    public void setSettings(ScrSettings settings) {
+        this.settings = settings;
+    }
+
+
     /**
      * Figures out if given module has felix SCR annotations in used.
      *
@@ -68,18 +66,16 @@ public class ScrProcessor {
      * @return true in case module has a runtime dependency to felix SCR annotations.
      */
     public static boolean accept(final Module module) {
-
         final PsiClass aClass = ApplicationManager.getApplication().runReadAction(new Computable<PsiClass>() {
             public PsiClass compute() {
                 return JavaPsiFacade.getInstance(module.getProject()).findClass("org.apache.felix.scr.annotations.Component", module.getModuleRuntimeScope(false));
             }
         });
-
         return aClass != null;
     }
 
-    public void execute() {
-        final ScrLogger logger = new ScrLogger(this.getContext());
+    public boolean execute() {
+        final ScrLogger logger = new ScrLogger(this.getContext(), module);
 
         final VirtualFile[] sourceRoots = ModuleRootManager.getInstance(this.getModule()).getSourceRoots();
 
@@ -91,25 +87,25 @@ public class ScrProcessor {
             final Collection<String> classPath = new LinkedHashSet<String>();
             classPath.add(classDir.getPath());
             collectClasspath(this.getModule(), classPath);
-            ArrayList<String> classPath1 = new ArrayList<String>(classPath);
-            final ClassLoader classLoader = createClassLoader(classPath1);
+            final ClassLoader classLoader = createClassLoader(classPath);
 
             final FileSet sourceFiles = new FileSet(sourceRoots);
 
-            final JavaClassDescriptorManager descriptorManager = new ScrMrg(logger, classLoader, sourceFiles, classDir, classPath1, new String[0], false, true);
+            final ScrMrg descriptorManager = new ScrMrg(logger, classLoader, sourceFiles, classDir, new String[0], false, true);
 
+            gen.setSpecVersion(settings.getSpec());
             gen.setGenerateAccessors(true);
             gen.setDescriptorManager(descriptorManager);
             gen.setOutputDirectory(new File(this.getOutputDir()));
-            gen.setStrictMode(false);
+            gen.setStrictMode(settings.isStrictMode());
             gen.setProperties(new HashMap<String, String>());
 
             if (gen.execute()) {
                 updateManifest(logger);
+                return !logger.isErrorPrinted();
             } else {
                 logger.warn("Couldn't create component descriptor for " + module.getName());
             }
-
         } catch (SCRDescriptorFailureException e) {
             logger.error(e);
         } catch (SCRDescriptorException e) {
@@ -117,25 +113,33 @@ public class ScrProcessor {
         } catch (MalformedURLException e) {
             logger.error(e);
         }
+        return false;
     }
 
     private void updateManifest(ScrLogger logger) {
         File manifest = new File(this.getOutputDir(), "/META-INF/MANIFEST.MF");
         if (manifest.exists()) {
 
-            String serviceComponentXml = "OSGI-INF/serviceComponents.xml";
+            final String serviceComponentXml = "OSGI-INF/serviceComponents.xml";
 
             try {
                 FileInputStream in = new FileInputStream(manifest);
                 Manifest m = null;
                 try {
                     m = new Manifest(in);
-                    String value = m.getMainAttributes().getValue("Service-Component");
-                    if (value == null || value.isEmpty()) {
+                    switch (settings.getManifestPolicy()) {
+                        case overwrite:
+                            m.getMainAttributes().putValue("Service-Component", serviceComponentXml);
+                            break;
+                        case merge:
+                            String value = m.getMainAttributes().getValue("Service-Component");
+                            if (value == null || value.isEmpty()) {
+                                m.getMainAttributes().putValue("Service-Component", serviceComponentXml);
+                            } else {
+                                m.getMainAttributes().putValue("Service-Component", addServiceComponentTo(value, serviceComponentXml));
+                            }
 
-                        m.getMainAttributes().putValue("Service-Component", serviceComponentXml);
-                    } else {
-                        m.getMainAttributes().putValue("Service-Component", addServiceComponentTo(value, serviceComponentXml));
+                            break;
                     }
                 } finally {
                     in.close();
@@ -174,11 +178,14 @@ public class ScrProcessor {
         return finalValue.toString();
     }
 
-    private ClassLoader createClassLoader(List<String> classPath) throws MalformedURLException {
-        URL[] urls = new URL[classPath.size()];
+    private ClassLoader createClassLoader(Collection<String> classPath) throws MalformedURLException {
+        final URL[] urls = new URL[classPath.size()];
+        final List<String> list = new ArrayList<String>(classPath);
+
         for (int i = 0; i < classPath.size(); i++) {
-            urls[i] = new File(classPath.get(i)).toURI().toURL();
+            urls[i] = new File(list.get(i)).toURI().toURL();
         }
+
         return new URLClassLoader(urls, getClass().getClassLoader());
     }
 
@@ -207,6 +214,4 @@ public class ScrProcessor {
             }
         }
     }
-
-
 }

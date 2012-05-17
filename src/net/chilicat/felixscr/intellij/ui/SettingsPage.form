@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="net.chilicat.felixscr.intellij.ui.SettingsPage">
+  <grid id="27dc6" binding="page" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="907" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="a86ca" class="javax.swing.JCheckBox" binding="enabledBox">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <selected value="true"/>
+          <text value="Enable Felix Annotation Processor"/>
+        </properties>
+      </component>
+      <vspacer id="6d4b3">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="9b4b2" class="javax.swing.JCheckBox" binding="strictModeBox">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <selected value="true"/>
+          <text value="Enable Strict Mode"/>
+        </properties>
+      </component>
+      <component id="5601" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <labelFor value="c08db"/>
+          <text value="Specification Version:"/>
+        </properties>
+      </component>
+      <component id="c08db" class="javax.swing.JComboBox" binding="specBox">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <model>
+            <item value="1.1"/>
+            <item value="1.0"/>
+          </model>
+        </properties>
+      </component>
+      <hspacer id="d5a89">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <component id="f8905" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <labelFor value="32fe1"/>
+          <text value="Manifest Policy:"/>
+        </properties>
+      </component>
+      <component id="32fe1" class="javax.swing.JComboBox" binding="manifestPolicyBox">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <model>
+            <item value="overwite"/>
+            <item value="merge"/>
+          </model>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

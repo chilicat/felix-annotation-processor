@@ -1,4 +1,4 @@
-package net.chilicat.felixscr.intellij;
+package net.chilicat.felixscr.intellij.settings;
 
 
 import com.intellij.openapi.components.*;
@@ -15,8 +15,21 @@ import org.jetbrains.annotations.NotNull;
 )
 public class ScrSettings implements PersistentStateComponent<ScrSettings> {
 
+    public static final String SPEC_1_0 = "1.0";
+    public static final String SPEC_1_1 = "1.1";
+
     private boolean enabled = true;
     private boolean strictMode = true;
+    private String spec = SPEC_1_1;
+    private ManifestPolicy manifestPolicy = ManifestPolicy.overwrite;
+
+    public String getSpec() {
+        return spec;
+    }
+
+    public void setSpec(String spec) {
+        this.spec = spec;
+    }
 
     public boolean isStrictMode() {
         return strictMode;
@@ -45,5 +58,17 @@ public class ScrSettings implements PersistentStateComponent<ScrSettings> {
     @NotNull
     public static ScrSettings getInstance(@NotNull Project project) {
         return ServiceManager.getService(project, ScrSettings.class);
+    }
+
+    public boolean isSpec(String spec) {
+        return spec.equals(getSpec());
+    }
+
+    public void setManifestPolicy(ManifestPolicy policy) {
+        this.manifestPolicy = policy;
+    }
+
+    public ManifestPolicy getManifestPolicy() {
+        return manifestPolicy;
     }
 }

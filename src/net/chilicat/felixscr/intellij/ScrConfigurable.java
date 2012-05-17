@@ -4,12 +4,12 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
+import net.chilicat.felixscr.intellij.settings.ScrSettings;
+import net.chilicat.felixscr.intellij.ui.SettingsPage;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * @author dkuffner
@@ -18,31 +18,12 @@ public class ScrConfigurable implements SearchableConfigurable, Configurable.NoS
 
     private static final String TOPIC = ScrConfigurable.class.getClass().getName();
 
-    private boolean modified = false;
     private final Project project;
 
-    private JCheckBox enabledBox;
-    private JCheckBox strictModeBox;
-    private JComponent container;
+    private final SettingsPage page = new SettingsPage();
 
     public ScrConfigurable(@NotNull Project project) {
-
         this.project = project;
-
-        enabledBox = createBox("Enable Felix Annotation Processor");
-        strictModeBox = createBox("Strict Mode");
-
-        Box box = Box.createVerticalBox();
-        box.add(enabledBox);
-        box.add(strictModeBox);
-        container = box;
-    }
-
-    private JCheckBox createBox(String name) {
-        ModifyUpdateListener modifyUpdateListener = new ModifyUpdateListener();
-        JCheckBox box = new JCheckBox(name);
-        box.addItemListener(modifyUpdateListener);
-        return box;
     }
 
     @NotNull
@@ -68,34 +49,22 @@ public class ScrConfigurable implements SearchableConfigurable, Configurable.NoS
     }
 
     public JComponent createComponent() {
-        return container;
+        return page.getComponent();
     }
 
     public boolean isModified() {
-        return modified;
+        return page.isModified();
     }
 
     public void apply() throws ConfigurationException {
-        ScrSettings settingsState = ScrSettings.getInstance(project);
-        settingsState.setEnabled(enabledBox.isSelected());
-        settingsState.setStrictMode(strictModeBox.isSelected());
-        modified = false;
+        page.apply(ScrSettings.getInstance(project));
     }
 
     public void reset() {
-        ScrSettings settingsState = ScrSettings.getInstance(project);
-        enabledBox.setSelected(settingsState.isEnabled());
-        strictModeBox.setSelected(settingsState.isStrictMode());
-        modified = false;
+        page.reset(ScrSettings.getInstance(project));
     }
 
     public void disposeUIResources() {
         // Noting to do.
-    }
-
-    private class ModifyUpdateListener implements ItemListener {
-        public void itemStateChanged(ItemEvent itemEvent) {
-            modified = true;
-        }
     }
 }
