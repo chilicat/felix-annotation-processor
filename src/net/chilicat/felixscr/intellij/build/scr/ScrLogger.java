@@ -80,7 +80,6 @@ public final class ScrLogger implements Log {
     }
 
     public void warn(String content, String location, int lineNumber) {
-        // TODO: Resolve file to create a clickable link!
         context.addMessage(CompilerMessageCategory.WARNING, location, null, lineNumber, 0);
         context.addMessage(CompilerMessageCategory.WARNING, content, location, lineNumber, 0);
         LOG.log(Level.WARNING, content);
