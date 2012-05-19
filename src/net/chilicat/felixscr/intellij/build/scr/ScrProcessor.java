@@ -107,11 +107,11 @@ public class ScrProcessor {
                 logger.warn("Couldn't create component descriptor for " + module.getName());
             }
         } catch (SCRDescriptorFailureException e) {
-            logger.error(e);
+            logger.error("Module [" + module.getName() + "]", e);
         } catch (SCRDescriptorException e) {
-            logger.error(e);
+            logger.error("Module [" + module.getName() + "]", e);
         } catch (MalformedURLException e) {
-            logger.error(e);
+            logger.error("Module [" + module.getName() + "]", e);
         }
         return false;
     }

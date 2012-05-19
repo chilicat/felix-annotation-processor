@@ -27,13 +27,15 @@ public final class ScrLogger implements Log {
     private final static Logger LOG = Logger.getLogger(ScrLogger.class.getName());
 
     private Module module;
-
     private boolean errorPrinted = false;
-
 
     public ScrLogger(CompileContext context, Module module) {
         this.context = context;
         this.module = module;
+    }
+
+    public boolean isErrorEnabled() {
+        return true;
     }
 
     public boolean isDebugEnabled() {
@@ -57,18 +59,31 @@ public final class ScrLogger implements Log {
     }
 
     public void info(String s) {
-        context.addMessage(CompilerMessageCategory.INFORMATION, s, null, 0, 0);
-        LOG.info(s);
+        if (logInfoMessage(s)) {
+            context.addMessage(CompilerMessageCategory.INFORMATION, s, null, 0, 0);
+            LOG.info(s);
+        }
     }
 
     public void info(String s, Throwable throwable) {
-        context.addMessage(CompilerMessageCategory.INFORMATION, s, null, 0, 0);
-        LOG.log(Level.INFO, s, throwable);
+        if (logInfoMessage(s)) {
+            context.addMessage(CompilerMessageCategory.INFORMATION, s, null, 0, 0);
+            LOG.log(Level.INFO, s, throwable);
+        }
     }
 
     public void info(Throwable throwable) {
         context.addMessage(CompilerMessageCategory.INFORMATION, throwable.getMessage(), null, 0, 0);
         LOG.log(Level.INFO, "", throwable);
+    }
+
+    private boolean logInfoMessage(String message) {
+        if (message == null ||
+                // Message has no real value for the ide user.
+                message.startsWith("Writing abstract service descriptor")) {
+            return false;
+        }
+        return true;
     }
 
     public boolean isWarnEnabled() {
@@ -93,10 +108,6 @@ public final class ScrLogger implements Log {
         LOG.log(Level.WARNING, "", throwable);
     }
 
-    public boolean isErrorEnabled() {
-        return true;
-    }
-
     public void error(String s) {
         errorPrinted = true;
         context.addMessage(CompilerMessageCategory.ERROR, s, null, 0, 0);
@@ -105,7 +116,6 @@ public final class ScrLogger implements Log {
 
     public void error(String s, String location, int i) {
         errorPrinted = true;
-
         String url = urlForLocationString(location);
 
         if (url == null) {
@@ -177,13 +187,13 @@ public final class ScrLogger implements Log {
 
     public void error(String s, Throwable throwable) {
         errorPrinted = true;
-        context.addMessage(CompilerMessageCategory.ERROR, s, null, 0, 0);
+        context.addMessage(CompilerMessageCategory.ERROR, s + " - " + throwable.getMessage(), null, 0, 0);
         LOG.log(Level.WARNING, s, throwable);
     }
 
     public void error(Throwable throwable) {
-        errorPrinted = true;
         if (!(throwable instanceof SCRDescriptorFailureException)) {
+            errorPrinted = true;
             context.addMessage(CompilerMessageCategory.ERROR, throwable.getMessage(), null, 0, 0);
             LOG.log(Level.WARNING, throwable.getLocalizedMessage(), throwable);
         }

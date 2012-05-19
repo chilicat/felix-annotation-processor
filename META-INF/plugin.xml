@@ -38,14 +38,21 @@
         <![CDATA[
             <html> <body>
                 <p>
-
-                    <strong>Version 0.4 </strong>
+                    <strong>Version 0.4</strong>
                     <ul>
                          <li>Disable Annotation Processor for Mosule which have an Felix Maven Plugin Facet</li>
                          <li>@Service Inspection: Shows if service doesn't specify service interface explicitly</li>
                          <li>@Service Inspection: Shows if service declares a interface which isn't implemented by class</li>
                     </ul>
                 </p>
+                </p>
+                <strong>Version 0.3</strong>
+                    <ul>
+                         <li>@Reference inspections</li>
+                         <li>Added spec version to configuration page</li>
+                         <li>Added manifest policy to configuration page</li>
+                    </ul>
+                <p>
 
             </body></html>
         ]]>
