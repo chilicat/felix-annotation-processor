@@ -1,0 +1,15 @@
+<html>
+<body>
+A @Service must declare only interfaces which are actually implemented by the class.
+
+<pre>
+    @Service({ ServiceA.class, ServiceB.class}
+    class Consumer implements ServiceB {
+        ...
+    }
+</pre>
+
+Wrong: ServiceA isn't implemented by the class.
+
+</body>
+</html>

@@ -36,8 +36,19 @@
 
     <change-notes>
         <![CDATA[
+            <html> <body>
+                <p>
 
-                ]]>
+                    <strong>Version 0.4 </strong>
+                    <ul>
+                         <li>Disable Annotation Processor for Mosule which have an Felix Maven Plugin Facet</li>
+                         <li>@Service Inspection: Shows if service doesn't specify service interface explicitly</li>
+                         <li>@Service Inspection: Shows if service declares a interface which isn't implemented by class</li>
+                    </ul>
+                </p>
+
+            </body></html>
+        ]]>
     </change-notes>
 
     <version>0.3</version>
@@ -104,6 +115,19 @@
                          enabledByDefault="true" level="WARNING"
                          implementationClass="net.chilicat.felixscr.intellij.inspection.ReferenceMissingMethod"/>
 
+        <localInspection language="JAVA"
+                         shortName="ServiceMissingInterfaces"
+                         displayName="Service - Missing service interface declaration"
+                         groupName="Felix SCR Annotations"
+                         enabledByDefault="true" level="WARNING"
+                         implementationClass="net.chilicat.felixscr.intellij.inspection.ServiceMissingInterfaces"/>
+
+        <localInspection language="JAVA"
+                         shortName="ServiceInvalidInterface"
+                         displayName="Service - declares service interface which is not implemented class"
+                         groupName="Felix SCR Annotations"
+                         enabledByDefault="true" level="WARNING"
+                         implementationClass="net.chilicat.felixscr.intellij.inspection.ServiceInvalidInterface"/>
 
     </extensions>
 
