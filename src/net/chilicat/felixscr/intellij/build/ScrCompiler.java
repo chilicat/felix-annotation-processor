@@ -1,5 +1,7 @@
 package net.chilicat.felixscr.intellij.build;
 
+import com.intellij.facet.Facet;
+import com.intellij.facet.FacetManager;
 import com.intellij.openapi.compiler.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -29,7 +31,7 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
                 final List<ProcessingItem> items = new ArrayList<ProcessingItem>();
 
                 for (final Module module : compileScope.getAffectedModules()) {
-                    if (ScrProcessor.accept(module)) {
+                    if (ScrProcessor.accept(module) && accept(context, module)) {
                         items.add(new ScrProcessingItem(module, settings));
                     }
                 }
@@ -39,6 +41,27 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
         }
 
         return ProcessingItem.EMPTY_ARRAY;
+    }
+
+    /**
+     * Enable the plugin only in case no other plugin will manager the Annotation aspect.
+     *
+     * @param context the context.
+     * @param module  the module
+     * @return true if no other facet will care about the annotations.
+     */
+    private boolean accept(CompileContext context, Module module) {
+        for (Facet f : FacetManager.getInstance(module).getAllFacets()) {
+            if (f.getTypeId().toString().equals("osgiBundleFacet")) {
+                // The Felix Maven plugin will case about annotations.
+                context.addMessage(CompilerMessageCategory.INFORMATION,
+                        "Felix SCR Annotation Processor disabled for Module: '" +
+                                module.getName() +
+                                "' because Apache Felix Maven plugin has been detected", null, 0, 0);
+                return false;
+            }
+        }
+        return true;
     }
 
     public ProcessingItem[] process(CompileContext context, ProcessingItem[] processingItems) {
