@@ -6,20 +6,46 @@
 
     <name>Felix SCR Annotation Processor</name>
     <description>
-        [ALPHA] The compiler plugin will look in the dependency graph of the module (which will be currently compiled)
-        if class
-        "org.apache.felix.scr.annotations.Component"
-        is available. In case the class is available the plugin assumes that Felix SCR annotations are in use. The
-        service component xml will be created and added to
-        the manifest in the build output.
-    </description>
-    <version>0.2</version>
-    <vendor url="https://github.com/chilicat/felix-annotation-processor">chilicat.net</vendor>
+        <![CDATA[
+        <html>
 
+        <strong># A Felix SCR Annotation processor for for IntelliJ.<strong>
+        <p>
+        The plugin will add a compiler plugin to the IntelliJ build chain which will detect if a module uses Felix SCR annotations.
+        In case the compiling module uses Felix SCR annotations it will create a service component XML and add it to the MANIFEST.MF.
+        </p>
+
+        Features:
+        <ul>
+            <li>Compiler plugin to process Felix SCR Annotations.</li>
+            <li>Generates a service component xml in the build output.</li>
+            <li>Add service component xml to the manifest (overwrite/merge).</li>
+            <li>Clickable error messages in case SCR generator failes.</li>
+            <li>Basic Inspection for Felix Annotations (missing bind/unbind method).</li>
+        </ul>
+
+        <strong>What is supported:</strong>
+        <p>The plugin currently does support only Felix Annotations 1.6.0.</p>
+
+        <strong>What is not supported</strong>
+        <p>The plugin doesn't support JavaDoc parsing.</p>
+
+    </html>
+        ]]>
+    </description>
+
+    <change-notes>
+        <![CDATA[
+
+                ]]>
+    </change-notes>
+
+    <version>0.3</version>
+    <vendor url="https://github.com/chilicat/felix-annotation-processor" email="chilicat.dev@googlemail.com">chilicat
+    </vendor>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
-
 
     <application-components>
         <!-- Add your application components here -->
@@ -42,12 +68,13 @@
         <projectConfigurable instance="net.chilicat.felixscr.intellij.ScrConfigurable"/>
         <projectService serviceImplementation="net.chilicat.felixscr.intellij.settings.ScrSettings"/>
 
-        <localInspection language="JAVA"
-                         shortName="ReferenceLookupBindDeclaration"
-                         displayName="Reference - Lookup obsolete Bind Declaration"
-                         groupName="Felix SCR Annotations"
-                         enabledByDefault="true" level="WARNING"
-                         implementationClass="net.chilicat.felixscr.intellij.inspection.ReferenceLookupBindDeclaration"/>
+        <localInspection
+                language="JAVA"
+                shortName="ReferenceLookupBindDeclaration"
+                displayName="Reference - Lookup obsolete Bind Declaration"
+                groupName="Felix SCR Annotations"
+                enabledByDefault="true" level="WARNING"
+                implementationClass="net.chilicat.felixscr.intellij.inspection.ReferenceLookupBindDeclaration"/>
 
         <localInspection language="JAVA"
                          shortName="ReferenceInterfaceMissingInClass"
