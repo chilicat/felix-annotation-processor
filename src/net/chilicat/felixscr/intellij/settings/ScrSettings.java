@@ -20,11 +20,21 @@ public class ScrSettings implements PersistentStateComponent<ScrSettings> {
 
     private boolean enabled = true;
     private boolean strictMode = true;
+    private boolean generateAccessors = true;
+
     private String spec = SPEC_1_1;
     private ManifestPolicy manifestPolicy = ManifestPolicy.overwrite;
 
     public String getSpec() {
         return spec;
+    }
+
+    public boolean isGenerateAccessors() {
+        return generateAccessors;
+    }
+
+    public void setGenerateAccessors(boolean generateAccessors) {
+        this.generateAccessors = generateAccessors;
     }
 
     public void setSpec(String spec) {

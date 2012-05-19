@@ -4,8 +4,11 @@ import net.chilicat.felixscr.intellij.settings.ManifestPolicy;
 import net.chilicat.felixscr.intellij.settings.ScrSettings;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author dkuffner
@@ -16,6 +19,7 @@ public class SettingsPage {
     private JComboBox specBox;
     private JPanel page;
     private JComboBox manifestPolicyBox;
+    private JCheckBox generateAccessorsBox;
     private boolean modified = false;
 
     public SettingsPage() {
@@ -28,18 +32,26 @@ public class SettingsPage {
 
     private void createUIComponents() {
 
+        final List<ItemSelectable> list = new ArrayList<ItemSelectable>();
+        list.add(enabledBox);
+        list.add(generateAccessorsBox);
+        list.add(strictModeBox);
+        list.add(specBox);
+        list.add(manifestPolicyBox);
+
         ModifyUpdateListener l = new ModifyUpdateListener();
-        enabledBox.addItemListener(l);
-        strictModeBox.addItemListener(l);
-        specBox.addItemListener(l);
-        manifestPolicyBox.addItemListener(l);
+        for (ItemSelectable s : list) {
+            s.addItemListener(l);
+        }
 
         enabledBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 boolean enabled = enabledBox.isSelected();
-                strictModeBox.setEnabled(enabled);
-                specBox.setEnabled(enabled);
-                manifestPolicyBox.setEnabled(enabled);
+                for (ItemSelectable s : list) {
+                    if (s != enabledBox) {
+                        ((JComponent) s).setEnabled(enabled);
+                    }
+                }
             }
         });
 
@@ -53,6 +65,7 @@ public class SettingsPage {
         settingsState.setEnabled(enabledBox.isSelected());
         settingsState.setStrictMode(strictModeBox.isSelected());
         settingsState.setSpec(specBox.getSelectedItem().toString());
+        settingsState.setGenerateAccessors(generateAccessorsBox.isSelected());
 
         ManifestPolicy manifestPolicy = ManifestPolicy.valueOf(manifestPolicyBox.getSelectedItem().toString());
         settingsState.setManifestPolicy(manifestPolicy);
@@ -64,6 +77,7 @@ public class SettingsPage {
         strictModeBox.setSelected(settingsState.isStrictMode());
         specBox.setSelectedItem(settingsState.getSpec());
         manifestPolicyBox.setSelectedItem(settingsState.getManifestPolicy().name());
+        generateAccessorsBox.setSelected(settingsState.isGenerateAccessors());
         modified = false;
     }
 

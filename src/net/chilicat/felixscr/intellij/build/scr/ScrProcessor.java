@@ -98,6 +98,7 @@ public class ScrProcessor {
             gen.setDescriptorManager(descriptorManager);
             gen.setOutputDirectory(new File(this.getOutputDir()));
             gen.setStrictMode(settings.isStrictMode());
+            gen.setGenerateAccessors(settings.isGenerateAccessors());
             gen.setProperties(new HashMap<String, String>());
 
             if (gen.execute()) {
