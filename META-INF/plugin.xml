@@ -58,7 +58,7 @@
         ]]>
     </change-notes>
 
-    <version>0.3</version>
+    <version>0.4</version>
     <vendor url="https://github.com/chilicat/felix-annotation-processor" email="chilicat.dev@googlemail.com">chilicat
     </vendor>
 
