@@ -22,6 +22,7 @@
             <li>Add service component xml to the manifest (overwrite/merge).</li>
             <li>Clickable error messages in case SCR generator failes.</li>
             <li>Basic Inspection for Felix Annotations (missing bind/unbind method).</li>
+            <li>Auto Refactoring - The "Refactor" menu offers a new Action for XML files which allows you to convert a Service Component XMl automatically into Felix SCR Annotatations</li>
         </ul>
 
         <strong>What is supported:</strong>
@@ -40,7 +41,9 @@
                 <p>
                     <strong>Version 0.4</strong>
                     <ul>
-                         <li>Disable Annotation Processor for Mosule which have an Felix Maven Plugin Facet</li>
+                         <li>Auto Refactoring - Converts a Service Component XML into Felix Annotations</li>
+                         <li>Settings - Allow user to enable/disable accessors generation</li>
+                         <li>Disable Annotation Processor for Module which have an Felix Maven Plugin Facet</li>
                          <li>@Service Inspection: Shows if service doesn't specify service interface explicitly</li>
                          <li>@Service Inspection: Shows if service declares a interface which isn't implemented by class</li>
                     </ul>
