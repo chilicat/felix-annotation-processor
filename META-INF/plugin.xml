@@ -78,6 +78,11 @@
 
     <actions>
         <!-- Add your actions here -->
+        <action id="net.chilicat.felixscr.intellij.refactoring.XmlToAnnotationRefactoringAction"
+                class="net.chilicat.felixscr.intellij.refactoring.XmlToAnnotationRefactoringAction"
+                text="To Felix SCR..." description="converts a service component xml to Felix Annotations.">
+            <add-to-group group-id="RefactoringMenu" anchor="first"/>
+        </action>
     </actions>
 
 
