@@ -39,6 +39,12 @@
         <![CDATA[
             <html> <body>
                 <p>
+                    <strong>Version 0.5</strong>
+                    <ul>
+                         <li>Bugfix Auto Refactoring - "activate/deactivate" got lost.</li>
+                    </ul>
+                </p>
+                <p>
                     <strong>Version 0.4</strong>
                     <ul>
                          <li>Auto Refactoring - Converts a Service Component XML into Felix Annotations</li>
@@ -48,15 +54,14 @@
                          <li>@Service Inspection: Shows if service declares a interface which isn't implemented by class</li>
                     </ul>
                 </p>
-                </p>
+                <p>
                 <strong>Version 0.3</strong>
                     <ul>
                          <li>@Reference inspections</li>
                          <li>Added spec version to configuration page</li>
                          <li>Added manifest policy to configuration page</li>
                     </ul>
-                <p>
-
+                </p>
             </body></html>
         ]]>
     </change-notes>

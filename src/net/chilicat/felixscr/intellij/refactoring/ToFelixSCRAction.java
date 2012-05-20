@@ -21,6 +21,7 @@ import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.actions.BaseRefactoringAction;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,96 +123,8 @@ public class ToFelixSCRAction extends BaseRefactoringAction {
                             FileEditorManager.getInstance(project).openFile(file, true, true);
                         }
 
-                        ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                            public void run() {
-                                PsiElementFactory factory = psiFacade.getElementFactory();
-                                PsiModifierList modifierList = implementationClass.getModifierList();
+                        ApplicationManager.getApplication().runWriteAction(new RefactoringRunner(psiFacade, implementationClass, componentTag, project));
 
-                                if (modifierList != null) {
-                                    PsiAnnotation componentAnnotation = factory.createAnnotationFromText(componentTag.createAnnotation(), modifierList);
-                                    modifierList.addAfter(componentAnnotation, null);
-
-                                    ServiceTag servicesTag = componentTag.getServices();
-
-                                    addService(factory, modifierList, servicesTag);
-                                    addProperties(factory, modifierList);
-
-                                    List<String> refsOnClass = new ArrayList<String>();
-
-                                    for (ReferenceTag ref : componentTag.getReferences()) {
-                                        String possibleBindMemberName = ref.getPossibleBindMemberName();
-                                        boolean added = false;
-                                        if (possibleBindMemberName != null) {
-                                            PsiField field = implementationClass.findFieldByName(possibleBindMemberName, false);
-                                            if (field != null) {
-                                                PsiType type = field.getType();
-                                                PsiClass psiClass = PsiTypesUtil.getPsiClass(type);
-                                                // If fqn is not available than the class is not fully resolved.
-                                                if (psiClass != null && psiClass.getQualifiedName() != null) {
-                                                    PsiModifierList modList = field.getModifierList();
-                                                    if (modList != null) {
-                                                        added = true;
-                                                        if (ref.getServiceInterface().equals(psiClass.getQualifiedName())) {
-                                                            PsiAnnotation refAnnotation = factory.createAnnotationFromText(ref.createAnnotation(false), modList);
-                                                            modList.addAfter(refAnnotation, null);
-                                                        } else {
-                                                            PsiAnnotation refAnnotation = factory.createAnnotationFromText(ref.createAnnotation(true), modList);
-                                                            modList.addAfter(refAnnotation, null);
-                                                        }
-                                                        JavaCodeStyleManager.getInstance(project).shortenClassReferences(modList);
-                                                        CodeStyleManager.getInstance(project).reformat(modList);
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        if (!added) {
-                                            refsOnClass.add(ref.createAnnotation(true));
-                                        }
-                                    }
-
-                                    appendClassLevelReferences(factory, modifierList, refsOnClass);
-
-
-                                    JavaCodeStyleManager.getInstance(project).shortenClassReferences(modifierList);
-                                    CodeStyleManager.getInstance(project).reformat(modifierList);
-
-                                    PsiImportList importList = ((PsiJavaFile) implementationClass.getContainingFile()).getImportList();
-                                    if (importList != null) {
-                                        CodeStyleManager.getInstance(project).reformat(importList);
-                                    }
-                                }
-                            }
-
-                            private void appendClassLevelReferences(PsiElementFactory factory, PsiModifierList modifierList, List<String> refsOnClass) {
-                                StringBuilder buf = new StringBuilder();
-                                for (String ref : refsOnClass) {
-                                    if (buf.length() > 0) {
-                                        buf.append(",\n");
-                                    }
-                                    buf.append(ref);
-                                }
-                                buf.insert(0, "@org.apache.felix.scr.annotations.References({\n");
-                                buf.append("\n})");
-                                PsiAnnotation refAn = factory.createAnnotationFromText(buf.toString(), modifierList);
-                                modifierList.addAfter(refAn, null);
-                            }
-
-                            private void addService(PsiElementFactory factory, PsiModifierList modifierList, ServiceTag servicesTag) {
-                                if (servicesTag != null) {
-                                    PsiAnnotation serviceAnnotation = factory.createAnnotationFromText(servicesTag.createAnnotation(), modifierList);
-                                    modifierList.addAfter(serviceAnnotation, null);
-                                }
-                            }
-
-                            private void addProperties(PsiElementFactory factory, PsiModifierList modifierList) {
-                                // Properties.
-                                for (String property : componentTag.createProperties()) {
-                                    PsiAnnotation an = factory.createAnnotationFromText(property, modifierList);
-                                    modifierList.addAfter(an, null);
-                                }
-                            }
-                        });
                     } else {
                         CommonRefactoringUtil.showErrorMessage("Implementation class not found", "Cannot resolve implementation class: " + clazz, null, project);
                     }
@@ -224,5 +137,162 @@ public class ToFelixSCRAction extends BaseRefactoringAction {
                 CommonRefactoringUtil.showErrorMessage("Not supported", "unsupported call", null, project);
             }
         };
+    }
+
+    private static class RefactoringRunner implements Runnable {
+        private final JavaPsiFacade psiFacade;
+        private final PsiClass implementationClass;
+        private final ComponentTag componentTag;
+        private final Project project;
+
+        public RefactoringRunner(JavaPsiFacade psiFacade, PsiClass implementationClass, ComponentTag componentTag, Project project) {
+            this.psiFacade = psiFacade;
+            this.implementationClass = implementationClass;
+            this.componentTag = componentTag;
+            this.project = project;
+        }
+
+        public void run() {
+            PsiElementFactory factory = psiFacade.getElementFactory();
+            PsiModifierList modifierList = implementationClass.getModifierList();
+
+            if (modifierList != null) {
+                PsiAnnotation componentAnnotation = factory.createAnnotationFromText(componentTag.createAnnotation(), modifierList);
+                modifierList.addAfter(componentAnnotation, null);
+
+                ServiceTag servicesTag = componentTag.getServices();
+
+                addService(factory, modifierList, servicesTag);
+                addProperties(factory, modifierList);
+
+                addDeActivate(factory, true);
+                addDeActivate(factory, false);
+
+                List<String> refsOnClass = new ArrayList<String>();
+
+                for (ReferenceTag ref : componentTag.getReferences()) {
+                    String possibleBindMemberName = ref.getPossibleBindMemberName();
+                    boolean added = false;
+                    if (possibleBindMemberName != null) {
+                        PsiField field = implementationClass.findFieldByName(possibleBindMemberName, false);
+                        if (field != null) {
+                            PsiType type = field.getType();
+                            PsiClass psiClass = PsiTypesUtil.getPsiClass(type);
+                            // If fqn is not available than the class is not fully resolved.
+                            if (psiClass != null && psiClass.getQualifiedName() != null) {
+                                PsiModifierList modList = field.getModifierList();
+                                if (modList != null) {
+                                    added = true;
+                                    if (ref.getServiceInterface().equals(psiClass.getQualifiedName())) {
+                                        PsiAnnotation refAnnotation = factory.createAnnotationFromText(ref.createAnnotation(false), modList);
+                                        modList.addAfter(refAnnotation, null);
+                                    } else {
+                                        PsiAnnotation refAnnotation = factory.createAnnotationFromText(ref.createAnnotation(true), modList);
+                                        modList.addAfter(refAnnotation, null);
+                                    }
+                                    JavaCodeStyleManager.getInstance(project).shortenClassReferences(modList);
+                                    CodeStyleManager.getInstance(project).reformat(modList);
+                                }
+                            }
+                        }
+                    }
+
+                    if (!added) {
+                        refsOnClass.add(ref.createAnnotation(true));
+                    }
+                }
+
+                appendClassLevelReferences(factory, modifierList, refsOnClass);
+
+
+                JavaCodeStyleManager.getInstance(project).shortenClassReferences(modifierList);
+                CodeStyleManager.getInstance(project).reformat(modifierList);
+
+                PsiImportList importList = ((PsiJavaFile) implementationClass.getContainingFile()).getImportList();
+                if (importList != null) {
+                    CodeStyleManager.getInstance(project).reformat(importList);
+                }
+            }
+        }
+
+        private void addDeActivate(PsiElementFactory factory, boolean isActivate) {
+            String name = isActivate ? componentTag.getActivate() : componentTag.getDeactivate();
+            String type = isActivate ? "Activate" : "Deactivate";
+            String annotationString = "@org.apache.felix.scr.annotations." + type;
+
+            if (name != null) {
+                PsiMethod[] methodsByName = implementationClass.findMethodsByName(name, true);
+                PsiMethod m = findMethod(methodsByName);
+
+                if (m != null) {
+                    PsiModifierList modifierList = m.getModifierList();
+                    modifierList.addAfter(factory.createAnnotationFromText(annotationString, modifierList), null);
+                    JavaCodeStyleManager.getInstance(project).shortenClassReferences(modifierList);
+                    CodeStyleManager.getInstance(project).reformat(modifierList);
+                } else {
+                    CommonRefactoringUtil.showErrorMessage(type + " Method", "Cannot find method: " + name, null, project);
+                }
+            }
+        }
+
+        /**
+         * Allowed:
+         * void methodName(ComponentContext ctx)
+         * void methodName()
+         *
+         * @param methodsByName methods.
+         * @return a method or null
+         */
+        @Nullable
+        private PsiMethod findMethod(@NotNull PsiMethod[] methodsByName) {
+            for (PsiMethod m : methodsByName) {
+                PsiParameterList list = m.getParameterList();
+                if (list.getParametersCount() == 0) {
+                    return m;
+                } else if (list.getParametersCount() == 1) {
+                    PsiParameter psiParameter = list.getParameters()[0];
+                    PsiType type = psiParameter.getType();
+
+                    PsiClass psiClass = PsiTypesUtil.getPsiClass(type);
+
+
+                    if (psiClass != null && "org.osgi.service.component.ComponentContext".equals(psiClass.getQualifiedName())) {
+                        return m;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void appendClassLevelReferences(PsiElementFactory factory, PsiModifierList modifierList, List<String> refsOnClass) {
+            if (!refsOnClass.isEmpty()) {
+                StringBuilder buf = new StringBuilder();
+                for (String ref : refsOnClass) {
+                    if (buf.length() > 0) {
+                        buf.append(",\n");
+                    }
+                    buf.append(ref);
+                }
+                buf.insert(0, "@org.apache.felix.scr.annotations.References({\n");
+                buf.append("\n})");
+                PsiAnnotation refAn = factory.createAnnotationFromText(buf.toString(), modifierList);
+                modifierList.addAfter(refAn, null);
+            }
+        }
+
+        private void addService(PsiElementFactory factory, PsiModifierList modifierList, ServiceTag servicesTag) {
+            if (servicesTag != null) {
+                PsiAnnotation serviceAnnotation = factory.createAnnotationFromText(servicesTag.createAnnotation(), modifierList);
+                modifierList.addAfter(serviceAnnotation, null);
+            }
+        }
+
+        private void addProperties(PsiElementFactory factory, PsiModifierList modifierList) {
+            // Properties.
+            for (String property : componentTag.createProperties()) {
+                PsiAnnotation an = factory.createAnnotationFromText(property, modifierList);
+                modifierList.addAfter(an, null);
+            }
+        }
     }
 }

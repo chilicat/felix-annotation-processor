@@ -25,6 +25,14 @@ public class ComponentTag {
         this.tag = tag;
     }
 
+    public String getActivate() {
+        return tag.getAttributeValue("activate");
+    }
+
+    public String getDeactivate() {
+        return tag.getAttributeValue("deactivate");
+    }
+
     @Nullable
     public ServiceTag getServices() {
         XmlTag serviceTag = tag.findFirstSubTag("service");
