@@ -68,7 +68,7 @@ public class ScrProcessor {
     public static boolean accept(final Module module) {
         final PsiClass aClass = ApplicationManager.getApplication().runReadAction(new Computable<PsiClass>() {
             public PsiClass compute() {
-                return JavaPsiFacade.getInstance(module.getProject()).findClass("org.apache.felix.scr.annotations.Component", module.getModuleRuntimeScope(false));
+                return JavaPsiFacade.getInstance(module.getProject()).findClass("org.apache.felix.scr.annotations.Component", module.getModuleWithLibrariesScope());
             }
         });
         return aClass != null;
