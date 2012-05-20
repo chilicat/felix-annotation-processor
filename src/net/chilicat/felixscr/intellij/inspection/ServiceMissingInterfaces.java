@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiNameValuePair;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -57,14 +58,15 @@ public class ServiceMissingInterfaces extends BaseJavaLocalInspectionTool {
         public void visitAnnotation(final PsiAnnotation annotation) {
             if (isService(annotation)) {
                 final Map<String, PsiNameValuePair> map = toAttributeMap(annotation.getParameterList());
-                if (!map.containsKey(null) || isEmptyDeclaration(map)) {
+                if (isEmptyDeclaration(null, map) && isEmptyDeclaration("value", map)) {
                     holder.registerProblem(annotation, "Specify service interfaces explicit", ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
                 }
             }
         }
 
-        private boolean isEmptyDeclaration(Map<String, PsiNameValuePair> map) {
-            return getClasses(map.get(null)).isEmpty();
+        private boolean isEmptyDeclaration(@Nullable String key, Map<String, PsiNameValuePair> map) {
+            PsiNameValuePair pair = map.get(key);
+            return pair == null || getClasses(pair).isEmpty();
         }
     }
 }

@@ -6,7 +6,9 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,42 +53,37 @@ public class ServiceInvalidInterface extends BaseJavaLocalInspectionTool {
             this.holder = holder;
         }
 
+        private boolean isEmptyDeclaration(@Nullable String key, Map<String, PsiNameValuePair> map) {
+            PsiNameValuePair pair = map.get(key);
+            return pair == null || getClasses(pair).isEmpty();
+        }
+
+        private List<PsiClass> resolveClasses(Map<String, PsiNameValuePair> map) {
+            for (String key : Arrays.asList(null, "value")) {
+                if (!isEmptyDeclaration(key, map)) {
+                    PsiNameValuePair pair = map.get(key);
+                    return getClasses(pair);
+                }
+            }
+            return null;
+        }
+
         @Override
         public void visitAnnotation(final PsiAnnotation annotation) {
             if (isService(annotation)) {
                 final Map<String, PsiNameValuePair> map = toAttributeMap(annotation.getParameterList());
-                if (map.containsKey(null)) {
-                    final PsiNameValuePair pair = map.get(null);
-                    final List<PsiClass> classes = getClasses(pair);
+                final List<PsiClass> classes = resolveClasses(map);
 
-                    if (!classes.isEmpty()) {
-                        PsiClass cls = findClass(annotation);
-                        if (cls != null) {
-                            // First check if owner class inherits the service classes!
-                            if (!resolveServiceInterfaces(classes, cls)) {
-                                for (PsiClass serviceCls : classes) {
-                                    String qualifiedName = serviceCls.getQualifiedName();
-                                    if (qualifiedName != null) {
-                                        holder.registerProblem(annotation, "Class must implement provided interface '" + qualifiedName + "'", ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
-                                    }
+                if (classes != null && !classes.isEmpty()) {
+                    PsiClass cls = findClass(annotation);
+                    if (cls != null) {
+                        // First check if owner class inherits the service classes!
+                        if (!resolveServiceInterfaces(classes, cls)) {
+                            for (PsiClass serviceCls : classes) {
+                                String qualifiedName = serviceCls.getQualifiedName();
+                                if (qualifiedName != null) {
+                                    holder.registerProblem(annotation, "Class must implement provided interface '" + qualifiedName + "'", ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
                                 }
-                                // Not all services are satisfied - continue with interfaces.  
-                                /*PsiReferenceList implementsList = cls.getImplementsList();
-                                if (implementsList != null) {
-                                    for (PsiClassType type : implementsList.getReferencedTypes()) {
-                                        PsiClass candidate = PsiTypesUtil.getPsiClass(type);
-                                        if (candidate != null) {
-                                            if(removeIfClassInherits(classes, candidate)) {
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                                if(!classes.isEmpty()) {
-                                    // Still not satified .
-                                } */
-
                             }
                         }
                     }

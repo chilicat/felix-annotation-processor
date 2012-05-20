@@ -16,7 +16,10 @@ import java.util.Map;
  * @author dkuffner
  */
 public class InspectionUtils {
+
     public final static String GROUP_NAME = "Felix SCR Annotations";
+    public final static String REFERENCE_CLS = "org.apache.felix.scr.annotations.Reference";
+    public final static String SERVICE_CLS = "org.apache.felix.scr.annotations.Service";
 
     @NotNull
     public static Map<String, PsiNameValuePair> toAttributeMap(@NotNull PsiAnnotationParameterList list) {
@@ -79,12 +82,12 @@ public class InspectionUtils {
 
     public static boolean isReference(@NotNull PsiAnnotation annotation) {
         final String qualifiedName = annotation.getQualifiedName();
-        return Comparing.strEqual(qualifiedName, "org.apache.felix.scr.annotations.Reference");
+        return Comparing.strEqual(qualifiedName, REFERENCE_CLS);
     }
 
     public static boolean isService(@NotNull PsiAnnotation annotation) {
         final String qfn = annotation.getQualifiedName();
-        return Comparing.strEqual(qfn, "org.apache.felix.scr.annotations.Service");
+        return Comparing.strEqual(qfn, SERVICE_CLS);
     }
 
     /**
