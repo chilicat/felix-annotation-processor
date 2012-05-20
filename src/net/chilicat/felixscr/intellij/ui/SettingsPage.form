@@ -71,7 +71,7 @@
         </constraints>
         <properties>
           <model>
-            <item value="overwite"/>
+            <item value="overwrite"/>
             <item value="merge"/>
           </model>
         </properties>

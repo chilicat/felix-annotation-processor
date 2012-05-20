@@ -25,9 +25,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author dkuffner
  */
-public class XmlToAnnotationRefactoringAction extends BaseRefactoringAction {
+public class ToFelixSCRAction extends BaseRefactoringAction {
 
-    public XmlToAnnotationRefactoringAction() {
+    public ToFelixSCRAction() {
 
     }
 
@@ -78,7 +78,7 @@ public class XmlToAnnotationRefactoringAction extends BaseRefactoringAction {
                         PsiClass componentClass = JavaPsiFacade.getInstance(module.getProject()).findClass("org.apache.felix.scr.annotations.Component", module.getModuleRuntimeScope(false));
 
                         if (componentClass == null) {
-                            CommonRefactoringUtil.showErrorMessage("Felix Annotations are not available", "Felix annotations are not availbale for module '" + module.getName() + "'. Please add module dependencyy to Felix Annotation library.", null, project);
+                            CommonRefactoringUtil.showErrorMessage("Felix Annotations are not available", "Felix annotations are not available for module '" + module.getName() + "'. Please add module dependency to Felix Annotation library.", null, project);
                             return;
                         }
 

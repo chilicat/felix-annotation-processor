@@ -2,7 +2,9 @@ package net.chilicat.felixscr.intellij.build.scr;
 
 import org.apache.felix.scrplugin.JavaClassDescriptorManager;
 import org.apache.felix.scrplugin.Log;
+import org.apache.felix.scrplugin.SCRDescriptorException;
 import org.apache.felix.scrplugin.SCRDescriptorFailureException;
+import org.apache.felix.scrplugin.tags.JavaClassDescription;
 
 import java.io.File;
 import java.util.Iterator;
@@ -22,6 +24,19 @@ public final class ScrMrg extends JavaClassDescriptorManager {
         super(log, classLoader, annotationTagProviders, parseJavadocs, processAnnotations);
         this.sourceFiles = sourceFiles;
         this.classesDirectory = classesDirectory.getAbsolutePath();
+    }
+
+    @Override
+    public JavaClassDescription[] getSourceDescriptions() throws SCRDescriptorException {
+        return super.getSourceDescriptions();
+    }
+
+    @Override
+    public JavaClassDescription getJavaClassDescription(String className) throws SCRDescriptorException {
+        JavaClassDescription javaClassDescription = super.getJavaClassDescription(className);
+        System.out.println(className);
+        System.out.println(javaClassDescription);
+        return javaClassDescription;
     }
 
     @Override

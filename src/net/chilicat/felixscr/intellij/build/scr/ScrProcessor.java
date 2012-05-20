@@ -77,8 +77,7 @@ public class ScrProcessor {
     public boolean execute() {
         final ScrLogger logger = new ScrLogger(this.getContext(), module);
 
-        final VirtualFile[] sourceRoots = ModuleRootManager.getInstance(this.getModule()).getSourceRoots();
-
+        final VirtualFile[] sourceRoots = ModuleRootManager.getInstance(this.getModule()).getSourceRoots(false);
         final SCRDescriptorGenerator gen = new SCRDescriptorGenerator(logger);
 
         try {
@@ -87,6 +86,7 @@ public class ScrProcessor {
             final Collection<String> classPath = new LinkedHashSet<String>();
             classPath.add(classDir.getPath());
             collectClasspath(this.getModule(), classPath);
+
             final ClassLoader classLoader = createClassLoader(classPath);
 
             final FileSet sourceFiles = new FileSet(sourceRoots);

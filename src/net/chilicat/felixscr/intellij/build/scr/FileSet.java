@@ -6,8 +6,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  */
@@ -19,7 +19,7 @@ public class FileSet {
     }
 
     public Iterator<File> iterator() {
-        List<File> files = new LinkedList<File>();
+        Set<File> files = new LinkedHashSet<File>();
         collect(sourceRoots, files);
         return files.iterator();
     }

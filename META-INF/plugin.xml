@@ -9,7 +9,7 @@
         <![CDATA[
         <html>
 
-        <strong># A Felix SCR Annotation processor for for IntelliJ.<strong>
+        <strong>A Felix SCR Annotation processor for for IntelliJ.<strong>
         <p>
         The plugin will add a compiler plugin to the IntelliJ build chain which will detect if a module uses Felix SCR annotations.
         In case the compiling module uses Felix SCR annotations it will create a service component XML and add it to the MANIFEST.MF.
@@ -81,8 +81,8 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="net.chilicat.felixscr.intellij.refactoring.XmlToAnnotationRefactoringAction"
-                class="net.chilicat.felixscr.intellij.refactoring.XmlToAnnotationRefactoringAction"
+        <action id="net.chilicat.felixscr.intellij.refactoring.ToFelixSCRAction"
+                class="net.chilicat.felixscr.intellij.refactoring.ToFelixSCRAction"
                 text="To Felix SCR..." description="converts a service component xml to Felix Annotations.">
             <add-to-group group-id="RefactoringMenu" anchor="first"/>
         </action>
