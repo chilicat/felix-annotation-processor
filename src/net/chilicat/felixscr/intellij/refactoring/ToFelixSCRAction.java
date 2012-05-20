@@ -22,6 +22,9 @@ import com.intellij.refactoring.actions.BaseRefactoringAction;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author dkuffner
  */
@@ -75,7 +78,7 @@ public class ToFelixSCRAction extends BaseRefactoringAction {
                             return;
                         }
 
-                        PsiClass componentClass = JavaPsiFacade.getInstance(module.getProject()).findClass("org.apache.felix.scr.annotations.Component", module.getModuleRuntimeScope(false));
+                        PsiClass componentClass = JavaPsiFacade.getInstance(module.getProject()).findClass("org.apache.felix.scr.annotations.Component", module.getModuleWithLibrariesScope());
 
                         if (componentClass == null) {
                             CommonRefactoringUtil.showErrorMessage("Felix Annotations are not available", "Felix annotations are not available for module '" + module.getName() + "'. Please add module dependency to Felix Annotation library.", null, project);
@@ -133,9 +136,10 @@ public class ToFelixSCRAction extends BaseRefactoringAction {
                                     addService(factory, modifierList, servicesTag);
                                     addProperties(factory, modifierList);
 
+                                    List<String> refsOnClass = new ArrayList<String>();
 
-                                    for (ReferenceTag t : componentTag.getReferences()) {
-                                        String possibleBindMemberName = t.getPossibleBindMemberName();
+                                    for (ReferenceTag ref : componentTag.getReferences()) {
+                                        String possibleBindMemberName = ref.getPossibleBindMemberName();
                                         boolean added = false;
                                         if (possibleBindMemberName != null) {
                                             PsiField field = implementationClass.findFieldByName(possibleBindMemberName, false);
@@ -147,11 +151,11 @@ public class ToFelixSCRAction extends BaseRefactoringAction {
                                                     PsiModifierList modList = field.getModifierList();
                                                     if (modList != null) {
                                                         added = true;
-                                                        if (t.getServiceInterface().equals(psiClass.getQualifiedName())) {
-                                                            PsiAnnotation refAnnotation = factory.createAnnotationFromText(t.createAnnotation(false), modList);
+                                                        if (ref.getServiceInterface().equals(psiClass.getQualifiedName())) {
+                                                            PsiAnnotation refAnnotation = factory.createAnnotationFromText(ref.createAnnotation(false), modList);
                                                             modList.addAfter(refAnnotation, null);
                                                         } else {
-                                                            PsiAnnotation refAnnotation = factory.createAnnotationFromText(t.createAnnotation(true), modList);
+                                                            PsiAnnotation refAnnotation = factory.createAnnotationFromText(ref.createAnnotation(true), modList);
                                                             modList.addAfter(refAnnotation, null);
                                                         }
                                                         JavaCodeStyleManager.getInstance(project).shortenClassReferences(modList);
@@ -162,10 +166,12 @@ public class ToFelixSCRAction extends BaseRefactoringAction {
                                         }
 
                                         if (!added) {
-                                            componentAnnotation = factory.createAnnotationFromText(t.createAnnotation(true), modifierList);
-                                            modifierList.addAfter(componentAnnotation, null);
+                                            refsOnClass.add(ref.createAnnotation(true));
                                         }
                                     }
+
+                                    appendClassLevelReferences(factory, modifierList, refsOnClass);
+
 
                                     JavaCodeStyleManager.getInstance(project).shortenClassReferences(modifierList);
                                     CodeStyleManager.getInstance(project).reformat(modifierList);
@@ -175,6 +181,20 @@ public class ToFelixSCRAction extends BaseRefactoringAction {
                                         CodeStyleManager.getInstance(project).reformat(importList);
                                     }
                                 }
+                            }
+
+                            private void appendClassLevelReferences(PsiElementFactory factory, PsiModifierList modifierList, List<String> refsOnClass) {
+                                StringBuilder buf = new StringBuilder();
+                                for (String ref : refsOnClass) {
+                                    if (buf.length() > 0) {
+                                        buf.append(",\n");
+                                    }
+                                    buf.append(ref);
+                                }
+                                buf.insert(0, "@org.apache.felix.scr.annotations.References({\n");
+                                buf.append("\n})");
+                                PsiAnnotation refAn = factory.createAnnotationFromText(buf.toString(), modifierList);
+                                modifierList.addAfter(refAn, null);
                             }
 
                             private void addService(PsiElementFactory factory, PsiModifierList modifierList, ServiceTag servicesTag) {
