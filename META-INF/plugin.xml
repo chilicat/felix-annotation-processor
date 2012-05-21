@@ -42,6 +42,7 @@
                     <strong>Version 0.5</strong>
                     <ul>
                          <li>Bugfix Auto Refactoring - "activate/deactivate" got lost.</li>
+                         <li>Bugfix: @Referecnes was always added to the implementation even no reference has been written to it.</li>
                     </ul>
                 </p>
                 <p>
@@ -66,7 +67,7 @@
         ]]>
     </change-notes>
 
-    <version>0.4</version>
+    <version>0.5</version>
     <vendor url="https://github.com/chilicat/felix-annotation-processor" email="chilicat.dev@googlemail.com">chilicat
     </vendor>
 
