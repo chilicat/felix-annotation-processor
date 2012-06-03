@@ -32,14 +32,6 @@ public final class ScrMrg extends JavaClassDescriptorManager {
     }
 
     @Override
-    public JavaClassDescription getJavaClassDescription(String className) throws SCRDescriptorException {
-        JavaClassDescription javaClassDescription = super.getJavaClassDescription(className);
-        System.out.println(className);
-        System.out.println(javaClassDescription);
-        return javaClassDescription;
-    }
-
-    @Override
     protected Iterator<File> getSourceFiles() {
         return sourceFiles.iterator();
     }
