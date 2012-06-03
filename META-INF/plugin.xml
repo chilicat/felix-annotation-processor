@@ -79,9 +79,7 @@
     </application-components>
 
     <project-components>
-        <component>
-            <implementation-class>net.chilicat.felixscr.intellij.ScrComponent</implementation-class>
-        </component>
+
     </project-components>
 
 
@@ -97,7 +95,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <compiler implementation="net.chilicat.felixscr.intellij.build.ScrCompiler"/>
-        <projectConfigurable instance="net.chilicat.felixscr.intellij.ScrConfigurable"/>
+        <projectConfigurable instance="net.chilicat.felixscr.intellij.settings.ui.ScrConfigurable"/>
         <projectService serviceImplementation="net.chilicat.felixscr.intellij.settings.ScrSettings"/>
 
         <localInspection
@@ -149,6 +147,9 @@
                          groupName="Felix SCR Annotations"
                          enabledByDefault="true" level="WARNING"
                          implementationClass="net.chilicat.felixscr.intellij.inspection.ServiceInvalidInterface"/>
+
+        <psi.referenceContributor language="JAVA"
+                                  implementation="net.chilicat.felixscr.intellij.references.ScrReferenceProvidersRegistry"/>
 
     </extensions>
 
