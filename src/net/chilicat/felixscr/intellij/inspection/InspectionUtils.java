@@ -66,9 +66,17 @@ public class InspectionUtils {
         final PsiAnnotationMemberValue value = p.getValue();
         if (value != null) {
             String text = value.getText();
-            return text.substring(1, text.length() - 1);
+            return stripFirstAndLast(text);
         }
         return null;
+    }
+
+    @Nullable
+    public static String stripFirstAndLast(@Nullable String text) {
+        if (text == null) {
+            return null;
+        }
+        return text.substring(1, text.length() - 1);
     }
 
     /*
@@ -145,5 +153,43 @@ public class InspectionUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns Type Element for Annotation. The annotation is expected to be on a field.
+     *
+     * @param annotation the annotation.
+     * @return the type element or null.
+     */
+    @Nullable
+    public static PsiTypeElement getTypeElement(@NotNull PsiAnnotation annotation) {
+        if (annotation.getParent() != null) {
+            PsiElement parent = annotation.getParent().getParent();
+            if (parent != null) {
+                for (PsiElement child : parent.getChildren()) {
+                    if (child instanceof PsiTypeElement) {
+                        return (PsiTypeElement) child;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String getQF(@Nullable PsiTypeElement typeElement) {
+        if (typeElement != null) {
+            PsiType type = typeElement.getType();
+            PsiClass psiClass = PsiTypesUtil.getPsiClass(type);
+            if (psiClass != null && psiClass.getQualifiedName() != null) {
+                return psiClass.getQualifiedName();
+            }
+        }
+        return null;
+    }
+
+    public static String getQFTypeElement(@NotNull PsiAnnotation annotation) {
+        PsiTypeElement typeElement = getTypeElement(annotation);
+        return getQF(typeElement);
     }
 }

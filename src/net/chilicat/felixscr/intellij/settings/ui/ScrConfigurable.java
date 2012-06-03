@@ -1,11 +1,11 @@
-package net.chilicat.felixscr.intellij;
+package net.chilicat.felixscr.intellij.settings.ui;
 
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import net.chilicat.felixscr.intellij.settings.ScrSettings;
-import net.chilicat.felixscr.intellij.ui.SettingsPage;
+import net.chilicat.felixscr.intellij.settings.SettingsPage;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 

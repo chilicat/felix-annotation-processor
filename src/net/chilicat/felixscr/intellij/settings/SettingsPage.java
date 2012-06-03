@@ -1,7 +1,4 @@
-package net.chilicat.felixscr.intellij.ui;
-
-import net.chilicat.felixscr.intellij.settings.ManifestPolicy;
-import net.chilicat.felixscr.intellij.settings.ScrSettings;
+package net.chilicat.felixscr.intellij.settings;
 
 import javax.swing.*;
 import java.awt.*;
