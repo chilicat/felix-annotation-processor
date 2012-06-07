@@ -92,9 +92,17 @@ public class ServiceInvalidInterface extends BaseJavaLocalInspectionTool {
         }
 
         private boolean resolveServiceInterfaces(List<PsiClass> classes, PsiClass cls) {
+
+            final String thisClassName = cls.getQualifiedName();
+
             for (Iterator<PsiClass> itr = classes.iterator(); itr.hasNext(); ) {
                 PsiClass serviceInterface = itr.next();
-                if (cls.isInheritor(serviceInterface, true)) {
+
+                String ifaceClassName = serviceInterface.getQualifiedName();
+
+                if (thisClassName != null && thisClassName.equals(ifaceClassName)) {
+                    itr.remove();
+                } else if (cls.isInheritor(serviceInterface, true)) {
                     itr.remove();
                 }
             }
