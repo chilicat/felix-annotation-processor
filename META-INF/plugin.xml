@@ -4,15 +4,19 @@
 
     <idea-version since-build="111.277"/>
 
+    <version>0.6</version>
+
     <name>Felix SCR Annotation Processor</name>
     <description>
         <![CDATA[
-        <html>
 
         <strong>A Felix SCR Annotation processor for for IntelliJ.<strong>
         <p>
         The plugin will add a compiler plugin to the IntelliJ build chain which will detect if a module uses Felix SCR annotations.
         In case the compiling module uses Felix SCR annotations it will create a service component XML and add it to the MANIFEST.MF.
+        </p>
+        <p>
+        The plugin also delivers also a bunch of code inspections which might be usefull.
         </p>
 
         Features:
@@ -25,49 +29,59 @@
             <li>Auto Refactoring - The "Refactor" menu offers a new Action for XML files which allows you to convert a Service Component XMl automatically into Felix SCR Annotatations</li>
         </ul>
 
-        <strong>What is supported:</strong>
-        <p>The plugin currently does support only Felix Annotations 1.6.0.</p>
+        <p>
+            <strong>What is supported:</strong>
+            <p>The plugin currently does support only Felix Annotations 1.6.0.</p>
+        </p>
+        <p>
+            <strong>What is not supported</strong>
+            <p>The plugin doesn't support JavaDoc parsing.</p>
+        </p>
 
-        <strong>What is not supported</strong>
-        <p>The plugin doesn't support JavaDoc parsing.</p>
+        If you want to provide feedback feel free to drop me a email or to post a issue on the github <a href="http://github.com/chilicat/felix-annotation-processor/issues?state=open">repository</a>
 
-    </html>
+
         ]]>
     </description>
 
     <change-notes>
         <![CDATA[
-            <html> <body>
-                <p>
-                    <strong>Version 0.5</strong>
-                    <ul>
-                         <li>Bugfix Auto Refactoring - "activate/deactivate" got lost.</li>
-                         <li>Bugfix: @Referecnes was always added to the implementation even no reference has been written to it.</li>
-                    </ul>
-                </p>
-                <p>
-                    <strong>Version 0.4</strong>
-                    <ul>
-                         <li>Auto Refactoring - Converts a Service Component XML into Felix Annotations</li>
-                         <li>Settings - Allow user to enable/disable accessors generation</li>
-                         <li>Disable Annotation Processor for Module which have an Felix Maven Plugin Facet</li>
-                         <li>@Service Inspection: Shows if service doesn't specify service interface explicitly</li>
-                         <li>@Service Inspection: Shows if service declares a interface which isn't implemented by class</li>
-                    </ul>
-                </p>
-                <p>
-                <strong>Version 0.3</strong>
-                    <ul>
-                         <li>@Reference inspections</li>
-                         <li>Added spec version to configuration page</li>
-                         <li>Added manifest policy to configuration page</li>
-                    </ul>
-                </p>
-            </body></html>
+            <p>
+                <strong>Version 0.6</strong>
+                <ul>
+                     <li>Build Optimization - re-generate serviceComponent.xml file only for modules which have been modified</li>
+                     <li>Buigfix: Service Inspection will show an error in case provided interface it class itself</li>
+                </ul>
+            </p>
+
+            <p>
+                <strong>Version 0.5</strong>
+                <ul>
+                     <li>Bugfix Auto Refactoring - "activate/deactivate" got lost.</li>
+                     <li>Bugfix: @Referecnes was always added to the implementation even no reference has been written to it.</li>
+                </ul>
+            </p>
+            <p>
+                <strong>Version 0.4</strong>
+                <ul>
+                     <li>Auto Refactoring - Converts a Service Component XML into Felix Annotations</li>
+                     <li>Settings - Allow user to enable/disable accessors generation</li>
+                     <li>Disable Annotation Processor for Module which have an Felix Maven Plugin Facet</li>
+                     <li>@Service Inspection: Shows if service doesn't specify service interface explicitly</li>
+                     <li>@Service Inspection: Shows if service declares a interface which isn't implemented by class</li>
+                </ul>
+            </p>
+            <p>
+            <strong>Version 0.3</strong>
+                <ul>
+                     <li>@Reference inspections</li>
+                     <li>Added spec version to configuration page</li>
+                     <li>Added manifest policy to configuration page</li>
+                </ul>
+            </p>
         ]]>
     </change-notes>
 
-    <version>0.5</version>
     <vendor url="https://github.com/chilicat/felix-annotation-processor" email="chilicat.dev@googlemail.com">chilicat
     </vendor>
 
