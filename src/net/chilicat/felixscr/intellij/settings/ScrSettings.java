@@ -21,9 +21,19 @@ public class ScrSettings implements PersistentStateComponent<ScrSettings> {
     private boolean enabled = true;
     private boolean strictMode = true;
     private boolean generateAccessors = true;
+    private boolean optimizedBuild = true;
+
 
     private String spec = SPEC_1_1;
     private ManifestPolicy manifestPolicy = ManifestPolicy.overwrite;
+
+    public boolean isOptimizedBuild() {
+        return optimizedBuild;
+    }
+
+    public void setOptimizedBuild(boolean optimizedBuild) {
+        this.optimizedBuild = optimizedBuild;
+    }
 
     public String getSpec() {
         return spec;

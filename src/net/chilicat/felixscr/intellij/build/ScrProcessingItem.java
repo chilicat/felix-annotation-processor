@@ -13,10 +13,12 @@ import org.jetbrains.annotations.NotNull;
 class ScrProcessingItem implements FileProcessingCompiler.ProcessingItem {
     private final Module module;
     private final ScrSettings settings;
+    private final long latestModified;
 
-    public ScrProcessingItem(Module module, ScrSettings settings) {
+    public ScrProcessingItem(@NotNull Module module, @NotNull ScrSettings settings, long latestModified) {
         this.module = module;
         this.settings = settings;
+        this.latestModified = latestModified;
     }
 
     @NotNull
@@ -25,12 +27,11 @@ class ScrProcessingItem implements FileProcessingCompiler.ProcessingItem {
     }
 
     public ValidityState getValidityState() {
-        return new TimestampValidityState(System.currentTimeMillis());
+        return new TimestampValidityState(latestModified);
     }
 
     public boolean execute(CompileContext context) {
-
-        context.getProgressIndicator().setText("Felix SCR generation for " + module.getName());
+        context.getProgressIndicator().setText("Felix SCR for " + module.getName());
 
         final String outputDir = ScrCompiler.getOutputPath(context, module);
 

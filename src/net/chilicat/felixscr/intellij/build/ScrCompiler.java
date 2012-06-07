@@ -3,6 +3,7 @@ package net.chilicat.felixscr.intellij.build;
 import com.intellij.facet.Facet;
 import com.intellij.facet.FacetManager;
 import com.intellij.openapi.compiler.*;
+import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.chilicat.felixscr.intellij.build.scr.ScrProcessor;
@@ -11,9 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInput;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author dkuffner
@@ -27,20 +26,57 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
         if (settings.isEnabled()) {
             final CompileScope compileScope = getScope(context);
 
-            if (settings.isEnabled()) {
-                final List<ProcessingItem> items = new ArrayList<ProcessingItem>();
+            VirtualFile[] files = compileScope.getFiles(StdFileTypes.JAVA, true);
+            Set<Module> modules = new HashSet<Module>();
+            for (VirtualFile f : files) {
+                modules.add(context.getModuleByFile(f));
+            }
 
-                for (final Module module : compileScope.getAffectedModules()) {
-                    if (ScrProcessor.accept(module) && accept(context, module)) {
-                        items.add(new ScrProcessingItem(module, settings));
+            final List<ProcessingItem> items = new ArrayList<ProcessingItem>();
+
+            for (final Module module : modules) {
+                if (ScrProcessor.accept(module) && accept(context, module)) {
+
+                    VirtualFile outputFile = context.getModuleOutputDirectory(module);
+
+                    if (outputFile != null) {
+
+                        VirtualFile oldSCfile = outputFile.findFileByRelativePath("OSGI-INF/serviceComponents.xml");
+
+                        if (oldSCfile == null || context.isRebuild() || !settings.isOptimizedBuild()) {
+                            items.add(new ScrProcessingItem(module, settings, System.currentTimeMillis()));
+                        } else {
+                            long latestModified = findLatestModified(outputFile);
+                            if (latestModified > oldSCfile.getTimeStamp()) {
+                                items.add(new ScrProcessingItem(module, settings, latestModified));
+                            }
+                        }
                     }
                 }
-
-                return toArray(items);
             }
+
+            return toArray(items);
         }
 
         return ProcessingItem.EMPTY_ARRAY;
+    }
+
+    private long findLatestModified(VirtualFile root) {
+        long cur = -1;
+        for (VirtualFile child : root.getChildren()) {
+            if (child.isDirectory()) {
+                long timeStamp = findLatestModified(child);
+                if (timeStamp > cur) {
+                    cur = timeStamp;
+                }
+            } else if (child.isInLocalFileSystem()) {
+                long timeStamp = child.getTimeStamp();
+                if (timeStamp > cur) {
+                    cur = timeStamp;
+                }
+            }
+        }
+        return cur;
     }
 
     /**
