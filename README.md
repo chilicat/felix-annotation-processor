@@ -2,7 +2,7 @@
 The plugin will add a compiler plugin to the IntelliJ build chain which will detect if a module uses Felix SCR annotations.
 In case the compiling module uses Felix SCR annotations it will create a service component XML and add it to the MANIFEST.MF.
 
-# Instalation and Usage
+# Installation and Usage
 See [wiki page](https://github.com/chilicat/felix-annotation-processor/wiki/Installation-and-Usage)
 
 # How does it work
