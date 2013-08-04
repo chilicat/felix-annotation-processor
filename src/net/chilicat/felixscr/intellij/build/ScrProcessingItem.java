@@ -46,7 +46,7 @@ class ScrProcessingItem implements FileProcessingCompiler.ProcessingItem {
             return scrProcessor.execute();
 
         } catch (RuntimeException e) {
-            context.addMessage(CompilerMessageCategory.ERROR, e.getLocalizedMessage(), null, 0, 0);
+            context.addMessage(CompilerMessageCategory.ERROR, "[" + module.getName() + "] ScrProcessing Failed: " + e.getMessage(), null, 0, 0);
         }
         return false;
     }

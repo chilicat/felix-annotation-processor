@@ -6,7 +6,6 @@ import com.intellij.openapi.compiler.*;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
-import net.chilicat.felixscr.intellij.build.scr.ScrProcessor;
 import net.chilicat.felixscr.intellij.settings.ScrSettings;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,6 +20,7 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
 
     @NotNull
     public ProcessingItem[] getProcessingItems(CompileContext context) {
+
         final ScrSettings settings = ScrSettings.getInstance(context.getProject());
 
         if (settings.isEnabled()) {
@@ -35,19 +35,18 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
             final List<ProcessingItem> items = new ArrayList<ProcessingItem>();
 
             for (final Module module : modules) {
-                if (ScrProcessor.accept(module) && accept(context, module)) {
-
+                if (accept(context, module)) {
                     VirtualFile outputFile = context.getModuleOutputDirectory(module);
 
                     if (outputFile != null) {
+                        VirtualFile osgiInf = outputFile.findChild("OSGI-INF");
 
-                        VirtualFile oldSCfile = outputFile.findFileByRelativePath("OSGI-INF/serviceComponents.xml");
-
-                        if (oldSCfile == null || context.isRebuild() || !settings.isOptimizedBuild()) {
+                        if (osgiInf == null || context.isRebuild() || !settings.isOptimizedBuild()) {
                             items.add(new ScrProcessingItem(module, settings, System.currentTimeMillis()));
                         } else {
                             long latestModified = findLatestModified(outputFile);
-                            if (latestModified > oldSCfile.getTimeStamp()) {
+                            long latestInOSGIn = findLatestModified(osgiInf);
+                            if (latestModified > latestInOSGIn) {
                                 items.add(new ScrProcessingItem(module, settings, latestModified));
                             }
                         }

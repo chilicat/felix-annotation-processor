@@ -18,6 +18,7 @@ public class SettingsPage {
     private JComboBox manifestPolicyBox;
     private JCheckBox generateAccessorsBox;
     private JCheckBox optimizedBuildBox;
+    private JCheckBox scanClasses;
     private boolean modified = false;
 
     public SettingsPage() {
@@ -37,6 +38,7 @@ public class SettingsPage {
         list.add(specBox);
         list.add(manifestPolicyBox);
         list.add(optimizedBuildBox);
+        list.add(scanClasses);
 
         ModifyUpdateListener l = new ModifyUpdateListener();
         for (ItemSelectable s : list) {
@@ -66,6 +68,7 @@ public class SettingsPage {
         settingsState.setSpec(specBox.getSelectedItem().toString());
         settingsState.setGenerateAccessors(generateAccessorsBox.isSelected());
         settingsState.setOptimizedBuild(optimizedBuildBox.isSelected());
+        settingsState.setScanClasses(scanClasses.isSelected());
 
         ManifestPolicy manifestPolicy = ManifestPolicy.valueOf(manifestPolicyBox.getSelectedItem().toString());
         settingsState.setManifestPolicy(manifestPolicy);
@@ -79,6 +82,7 @@ public class SettingsPage {
         manifestPolicyBox.setSelectedItem(settingsState.getManifestPolicy().name());
         generateAccessorsBox.setSelected(settingsState.isGenerateAccessors());
         optimizedBuildBox.setSelected(settingsState.isOptimizedBuild());
+        scanClasses.setSelected(settingsState.isScanClasses());
         modified = false;
     }
 

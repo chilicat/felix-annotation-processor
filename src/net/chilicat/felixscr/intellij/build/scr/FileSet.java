@@ -11,11 +11,13 @@ import java.util.Set;
 
 /**
  */
-public class FileSet {
+public class FileSet implements Iterable<File> {
     final VirtualFile[] sourceRoots;
+    final String extension;
 
-    public FileSet(VirtualFile[] sourceRoots) {
+    public FileSet(VirtualFile[] sourceRoots, String extension) {
         this.sourceRoots = sourceRoots;
+        this.extension = extension;
     }
 
     public Iterator<File> iterator() {
@@ -24,12 +26,12 @@ public class FileSet {
         return files.iterator();
     }
 
-    static void collect(VirtualFile[] sourceRoots, Collection<File> sources) {
+    void collect(VirtualFile[] sourceRoots, Collection<File> sources) {
         for (VirtualFile f : sourceRoots) {
             if (f.isInLocalFileSystem()) {
                 if (f.isDirectory()) {
                     collect(f.getChildren(), sources);
-                } else if (f.isValid() && f.getName().endsWith("java")) {
+                } else if (f.isValid() && f.getName().endsWith(extension)) {
                     sources.add(VfsUtil.virtualToIoFile(f));
                 }
             }

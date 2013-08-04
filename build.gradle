@@ -1,0 +1,25 @@
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    // Needed for the src generator ant task.
+    scrAntLib
+}
+
+dependencies {
+    //scrAntLib group: "org.apache.felix", name: "org.apache.felix.scr.generator", version: "1.7.1-SNAPSHOT", changing: true
+    scrAntLib 'org.apache.felix:org.apache.felix.scr.generator:1.7.0'
+    scrAntLib 'org.osgi:org.osgi.compendium:4.3.1'
+}
+
+task copyLibs(type: Sync) {
+    from configurations.scrAntLib
+    into file("libs")
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}

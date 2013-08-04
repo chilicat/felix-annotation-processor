@@ -17,11 +17,13 @@ public class ScrSettings implements PersistentStateComponent<ScrSettings> {
 
     public static final String SPEC_1_0 = "1.0";
     public static final String SPEC_1_1 = "1.1";
+    public static final String SPEC_1_2 = "1.2";
 
     private boolean enabled = true;
     private boolean strictMode = true;
     private boolean generateAccessors = true;
     private boolean optimizedBuild = true;
+    private boolean scanClasses = false;
 
 
     private String spec = SPEC_1_1;
@@ -91,4 +93,14 @@ public class ScrSettings implements PersistentStateComponent<ScrSettings> {
     public ManifestPolicy getManifestPolicy() {
         return manifestPolicy;
     }
+
+    public boolean isScanClasses() {
+        return scanClasses;
+    }
+
+    public void setScanClasses(boolean scanClasses) {
+        this.scanClasses = scanClasses;
+    }
 }
+
+

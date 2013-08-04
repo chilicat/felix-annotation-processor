@@ -42,6 +42,7 @@ public final class ScrLogger implements Log {
         return true;
     }
 
+
     public void debug(String s) {
         LOG.finest(s);
     }
@@ -95,9 +96,7 @@ public final class ScrLogger implements Log {
     }
 
     public void warn(String content, String location, int lineNumber) {
-        context.addMessage(CompilerMessageCategory.WARNING, location, null, lineNumber, 0);
-        context.addMessage(CompilerMessageCategory.WARNING, content, location, lineNumber, 0);
-        LOG.log(Level.WARNING, content);
+        warn(content, location, lineNumber, 0);
     }
 
     public void warn(String s, Throwable throwable) {
@@ -108,6 +107,13 @@ public final class ScrLogger implements Log {
         LOG.log(Level.WARNING, "", throwable);
     }
 
+    public void warn(String content, String location, int lineNumber, int column) {
+        context.addMessage(CompilerMessageCategory.WARNING, location, null, lineNumber, column);
+        context.addMessage(CompilerMessageCategory.WARNING, content, location, lineNumber, column);
+        LOG.log(Level.WARNING, content);
+    }
+
+
     public void error(String s) {
         errorPrinted = true;
         context.addMessage(CompilerMessageCategory.ERROR, s, null, 0, 0);
@@ -115,6 +121,10 @@ public final class ScrLogger implements Log {
     }
 
     public void error(String s, String location, int i) {
+        error(s, location, i, 0);
+    }
+
+    public void error(String s, String location, int i, int column) {
         errorPrinted = true;
         String url = urlForLocationString(location);
 
@@ -126,10 +136,10 @@ public final class ScrLogger implements Log {
 
         if (url == null && location != null) {
             // Print location in case we cannot determine any location in the project.
-            context.addMessage(CompilerMessageCategory.ERROR, location, null, i, 0);
+            context.addMessage(CompilerMessageCategory.ERROR, location, null, i, column);
         }
 
-        context.addMessage(CompilerMessageCategory.ERROR, s, url, i, 0);
+        context.addMessage(CompilerMessageCategory.ERROR, s, url, i, column);
 
         LOG.log(Level.WARNING, s);
     }

@@ -1,6 +1,5 @@
 package net.chilicat.felixscr.intellij.build.scr;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.roots.LibraryOrderEntry;
@@ -8,16 +7,14 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
+import com.intellij.util.PathUtil;
 import net.chilicat.felixscr.intellij.build.ScrCompiler;
 import net.chilicat.felixscr.intellij.settings.ScrSettings;
-import org.apache.felix.scrplugin.SCRDescriptorException;
-import org.apache.felix.scrplugin.SCRDescriptorFailureException;
-import org.apache.felix.scrplugin.SCRDescriptorGenerator;
+import org.apache.felix.scrplugin.*;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,70 +55,87 @@ public class ScrProcessor {
         this.settings = settings;
     }
 
-
-    /**
-     * Figures out if given module has felix SCR annotations in used.
-     *
-     * @param module the module.
-     * @return true in case module has a runtime dependency to felix SCR annotations.
-     */
-    public static boolean accept(final Module module) {
-        final PsiClass aClass = ApplicationManager.getApplication().runReadAction(new Computable<PsiClass>() {
-            public PsiClass compute() {
-                return JavaPsiFacade.getInstance(module.getProject()).findClass("org.apache.felix.scr.annotations.Component", module.getModuleWithLibrariesScope());
-            }
-        });
-        return aClass != null;
-    }
-
     public boolean execute() {
         final ScrLogger logger = new ScrLogger(this.getContext(), module);
-
-        final VirtualFile[] sourceRoots = ModuleRootManager.getInstance(this.getModule()).getSourceRoots(false);
-        final SCRDescriptorGenerator gen = new SCRDescriptorGenerator(logger);
 
         try {
             final File classDir = new File(this.getOutputDir());
 
             final Collection<String> classPath = new LinkedHashSet<String>();
             classPath.add(classDir.getPath());
+            classPath.add(PathUtil.getJarPathForClass(Component.class));
+            classPath.add(PathUtil.getJarPathForClass(BundleContext.class));
             collectClasspath(this.getModule(), classPath);
 
-            final ClassLoader classLoader = createClassLoader(classPath);
+            Options opt = new Options();
+            opt.setGenerateAccessors(settings.isGenerateAccessors());
+            opt.setSpecVersion(SpecVersion.fromName(settings.getSpec()));
+            opt.setStrictMode(settings.isStrictMode());
+            opt.setProperties(new HashMap<String, String>());
+            opt.setOutputDirectory(classDir);
 
-            final FileSet sourceFiles = new FileSet(sourceRoots);
+            Project project = new Project();
+            project.setClassLoader(createClassLoader(classPath));
+            project.setClassesDirectory(classDir.getAbsolutePath());
+            project.setSources(getSources());
+            project.setDependencies(toFileCollection(classPath));
 
-            final ScrMrg descriptorManager = new ScrMrg(logger, classLoader, sourceFiles, classDir, new String[0], false, true);
+            SCRDescriptorGenerator gen = new SCRDescriptorGenerator(logger);
+            gen.setOptions(opt);
+            gen.setProject(project);
 
-            gen.setSpecVersion(settings.getSpec());
-            gen.setGenerateAccessors(true);
-            gen.setDescriptorManager(descriptorManager);
-            gen.setOutputDirectory(new File(this.getOutputDir()));
-            gen.setStrictMode(settings.isStrictMode());
-            gen.setGenerateAccessors(settings.isGenerateAccessors());
-            gen.setProperties(new HashMap<String, String>());
-
-            if (gen.execute()) {
-                updateManifest(logger);
-                return !logger.isErrorPrinted();
-            } else {
-                logger.warn("Couldn't create component descriptor for " + module.getName());
+            Result result = gen.execute();
+            if (result.getScrFiles() != null) {
+                updateManifest(result, logger);
             }
+
+            return !logger.isErrorPrinted();
+
         } catch (SCRDescriptorFailureException e) {
-            logger.error("Module [" + module.getName() + "]", e);
+            logger.error("Module [" + module.getName() + "]: " + e.getMessage(), e);
         } catch (SCRDescriptorException e) {
-            logger.error("Module [" + module.getName() + "]", e);
+            logger.error("Module [" + module.getName() + "]: " + e.getMessage(), e.getSourceLocation(), 0);
         } catch (MalformedURLException e) {
-            logger.error("Module [" + module.getName() + "]", e);
+            logger.error("Module [" + module.getName() + "]: " + e.getMessage(), e);
         }
         return false;
     }
 
-    private void updateManifest(ScrLogger logger) {
-        File manifest = new File(this.getOutputDir(), "/META-INF/MANIFEST.MF");
-        if (manifest.exists()) {
+    private Collection<Source> getSources() {
+        final Collection<Source> sources;
 
-            final String serviceComponentXml = "OSGI-INF/serviceComponents.xml";
+
+        if (settings.isScanClasses()) {
+            VirtualFile out = context.getModuleOutputDirectory(module);
+            if (out != null) {
+                sources = ScrSource.toSourcesCollection(new VirtualFile[]{out}, ".class");
+            } else {
+                sources = Collections.emptyList();
+            }
+        } else {
+            final VirtualFile[] sourceRoots = ModuleRootManager.getInstance(this.getModule()).getSourceRoots(false);
+            sources = ScrSource.toSourcesCollection(sourceRoots, ".java");
+        }
+        return sources;
+    }
+
+    private Collection<File> toFileCollection(Collection<String> classPath) {
+        Collection<File> files = new ArrayList<File>(classPath.size());
+        boolean first = true;
+        for (String a : classPath) {
+            if (!first) {
+                files.add(new File(a));
+            }
+            first = false;
+        }
+        return files;
+    }
+
+
+    private void updateManifest(Result result, ScrLogger logger) {
+        File manifest = new File(this.getOutputDir(), "/META-INF/MANIFEST.MF");
+        if (manifest.exists() && !result.getScrFiles().isEmpty()) {
+            final String componentLine = "OSGI-INF/*";
 
             try {
                 FileInputStream in = new FileInputStream(manifest);
@@ -130,14 +144,14 @@ public class ScrProcessor {
                     m = new Manifest(in);
                     switch (settings.getManifestPolicy()) {
                         case overwrite:
-                            m.getMainAttributes().putValue("Service-Component", serviceComponentXml);
+                            m.getMainAttributes().putValue("Service-Component", componentLine);
                             break;
                         case merge:
                             String value = m.getMainAttributes().getValue("Service-Component");
                             if (value == null || value.isEmpty()) {
-                                m.getMainAttributes().putValue("Service-Component", serviceComponentXml);
+                                m.getMainAttributes().putValue("Service-Component", componentLine);
                             } else {
-                                m.getMainAttributes().putValue("Service-Component", addServiceComponentTo(value, serviceComponentXml));
+                                m.getMainAttributes().putValue("Service-Component", addServiceComponentTo(value, componentLine));
                             }
 
                             break;
@@ -215,4 +229,5 @@ public class ScrProcessor {
             }
         }
     }
+
 }

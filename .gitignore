@@ -3,3 +3,5 @@ tmp
 out
 felix-annotation-processor.zip
 .idea/workspace.xml
+libs/**
+.gradle
