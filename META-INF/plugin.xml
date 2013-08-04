@@ -2,9 +2,9 @@
 
     <id>net.chilicat.felixscr</id>
 
-    <idea-version since-build="111.277"/>
+    <idea-version since-build="123.155"/>
 
-    <version>0.6</version>
+    <version>1.0</version>
 
     <name>Felix SCR Annotation Processor</name>
     <description>
@@ -24,7 +24,7 @@
             <li>Compiler plugin to process Felix SCR Annotations.</li>
             <li>Generates a service component xml in the build output.</li>
             <li>Add service component xml to the manifest (overwrite/merge).</li>
-            <li>Clickable error messages in case SCR generator failes.</li>
+            <li>Click-able error messages in case SCR generator fails.</li>
             <li>Basic Inspection for Felix Annotations (missing bind/unbind method).</li>
             <li>Auto Refactoring - The "Refactor" menu offers a new Action for XML files which allows you to convert a Service Component XMl automatically into Felix SCR Annotatations</li>
         </ul>
@@ -47,10 +47,20 @@
     <change-notes>
         <![CDATA[
             <p>
+                <strong>Version 1.0</strong>
+
+                <b>This version upgrade is not backwards compatible. Your project must use Felix SCR Annotation version 1.9.6</b>
+
+                <ul>
+                     <li>Upgraded to latest Felix SCR Annotation generator (Version 1.8.0).</li>
+                     <li>Groovy Support: Added new settings option to enable class scan</li>
+                </ul>
+            </p>
+            <p>
                 <strong>Version 0.6</strong>
                 <ul>
                      <li>Build Optimization - re-generate serviceComponent.xml file only for modules which have been modified</li>
-                     <li>Buigfix: Service Inspection will show an error in case provided interface it class itself</li>
+                     <li>Bugfix: Service Inspection will show an error in case provided interface it class itself</li>
                 </ul>
             </p>
 

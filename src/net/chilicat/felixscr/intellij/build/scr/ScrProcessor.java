@@ -7,6 +7,7 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.PathUtil;
@@ -61,6 +62,9 @@ public class ScrProcessor {
         try {
             final File classDir = new File(this.getOutputDir());
 
+            deleteServiceComponentXMLFiles(classDir, logger);
+
+
             final Collection<String> classPath = new LinkedHashSet<String>();
             classPath.add(classDir.getPath());
             classPath.add(PathUtil.getJarPathForClass(Component.class));
@@ -99,6 +103,23 @@ public class ScrProcessor {
             logger.error("Module [" + module.getName() + "]: " + e.getMessage(), e);
         }
         return false;
+    }
+
+    private void deleteServiceComponentXMLFiles(File classDir, ScrLogger logger) {
+        File xmlDir = new File(classDir, "OSGI-INF");
+        if (xmlDir.exists() && xmlDir.isDirectory()) {
+            File[] files = xmlDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.getName().endsWith(".xml")) {
+                        logger.debug("Delete service xml: " + file.getAbsolutePath());
+                        if (!file.delete()) {
+                            logger.warn("Cannot delete service xml: " + file.getAbsolutePath());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private Collection<Source> getSources() {

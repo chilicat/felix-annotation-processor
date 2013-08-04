@@ -21,7 +21,7 @@ those plugins are Maven centric. I couldn't find a Intellij plugin which just ad
 SCR annotations without Maven.
 
 # What is supported
-The plugin currently does support only Felix Annotations 1.6.0.
+The plugin currently does support only Felix Annotations 1.9.4.
 
 # What is not supported
 The plugin doesn't support JavaDoc parsing.
