@@ -4,7 +4,7 @@
 
     <idea-version since-build="123.155"/>
 
-    <version>1.0</version>
+    <version>1.1</version>
 
     <name>Felix SCR Annotation Processor</name>
     <description>
@@ -47,9 +47,9 @@
     <change-notes>
         <![CDATA[
             <p>
-                <strong>Version 1.0</strong>
+                <strong>Version 1.1</strong>
 
-                <b>This version upgrade is not backwards compatible. Your project must use Felix SCR Annotation version 1.9.6</b>
+                <b>Warning: This version upgrade is not backwards compatible. Your project must use Felix SCR Annotation version 1.9.6</b>
 
                 <ul>
                      <li>Upgraded to latest Felix SCR Annotation generator (Version 1.8.0).</li>
