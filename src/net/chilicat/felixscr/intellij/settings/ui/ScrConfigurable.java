@@ -5,6 +5,7 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import net.chilicat.felixscr.intellij.settings.ScrSettings;
+import net.chilicat.felixscr.intellij.settings.ScrSettingsImpl;
 import net.chilicat.felixscr.intellij.settings.SettingsPage;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -57,11 +58,11 @@ public class ScrConfigurable implements SearchableConfigurable, Configurable.NoS
     }
 
     public void apply() throws ConfigurationException {
-        page.apply(ScrSettings.getInstance(project));
+        page.apply(ScrSettingsImpl.getInstance(project));
     }
 
     public void reset() {
-        page.reset(ScrSettings.getInstance(project));
+        page.reset(ScrSettingsImpl.getInstance(project));
     }
 
     public void disposeUIResources() {

@@ -13,11 +13,7 @@ import org.jetbrains.annotations.NotNull;
                 @Storage(file = "$PROJECT_CONFIG_DIR$/felix-scr.xml", scheme = StorageScheme.DIRECTORY_BASED)
         }
 )
-public class ScrSettings implements PersistentStateComponent<ScrSettings> {
-
-    public static final String SPEC_1_0 = "1.0";
-    public static final String SPEC_1_1 = "1.1";
-    public static final String SPEC_1_2 = "1.2";
+public class ScrSettingsImpl implements PersistentStateComponent<ScrSettingsImpl>, ScrSettings {
 
     private boolean enabled = true;
     private boolean strictMode = true;
@@ -69,17 +65,17 @@ public class ScrSettings implements PersistentStateComponent<ScrSettings> {
         this.enabled = enabled;
     }
 
-    public ScrSettings getState() {
+    public ScrSettingsImpl getState() {
         return this;
     }
 
-    public void loadState(ScrSettings scrSettings) {
+    public void loadState(ScrSettingsImpl scrSettings) {
         XmlSerializerUtil.copyBean(scrSettings, this);
     }
 
     @NotNull
     public static ScrSettings getInstance(@NotNull Project project) {
-        return ServiceManager.getService(project, ScrSettings.class);
+        return ServiceManager.getService(project, ScrSettingsImpl.class);
     }
 
     public boolean isSpec(String spec) {

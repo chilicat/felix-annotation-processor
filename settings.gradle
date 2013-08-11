@@ -1,0 +1,3 @@
+include 'felix-scr-common'
+include 'jps-plugin'
+

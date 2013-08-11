@@ -7,6 +7,7 @@ import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.chilicat.felixscr.intellij.settings.ScrSettings;
+import net.chilicat.felixscr.intellij.settings.ScrSettingsImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInput;
@@ -21,7 +22,7 @@ public class ScrCompiler implements ClassPostProcessingCompiler {
     @NotNull
     public ProcessingItem[] getProcessingItems(CompileContext context) {
 
-        final ScrSettings settings = ScrSettings.getInstance(context.getProject());
+        final ScrSettings settings = ScrSettingsImpl.getInstance(context.getProject());
 
         if (settings.isEnabled()) {
             final CompileScope compileScope = getScope(context);

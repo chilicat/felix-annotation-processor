@@ -6,6 +6,7 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import net.chilicat.felixscr.intellij.settings.ScrSettings;
+import net.chilicat.felixscr.intellij.settings.ScrSettingsImpl;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +54,7 @@ public class ReferenceNameMissingInClass extends BaseJavaLocalInspectionTool {
         public void visitAnnotation(final PsiAnnotation annotation) {
             if (isReference(annotation)) {
                 final Project project = annotation.getManager().getProject();
-                final ScrSettings settings = ScrSettings.getInstance(project);
+                final ScrSettings settings = ScrSettingsImpl.getInstance(project);
                 if (settings.isSpec(ScrSettings.SPEC_1_0)) {
                     if (annotation.getParent() != null && annotation.getParent().getParent() instanceof PsiClass) {
                         Map<String, PsiNameValuePair> map = toAttributeMap(annotation.getParameterList());

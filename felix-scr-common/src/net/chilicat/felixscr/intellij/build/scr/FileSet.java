@@ -1,8 +1,5 @@
 package net.chilicat.felixscr.intellij.build.scr;
 
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,10 +9,10 @@ import java.util.Set;
 /**
  */
 public class FileSet implements Iterable<File> {
-    final VirtualFile[] sourceRoots;
+    final File[] sourceRoots;
     final String extension;
 
-    public FileSet(VirtualFile[] sourceRoots, String extension) {
+    public FileSet(File[] sourceRoots, String extension) {
         this.sourceRoots = sourceRoots;
         this.extension = extension;
     }
@@ -26,13 +23,13 @@ public class FileSet implements Iterable<File> {
         return files.iterator();
     }
 
-    void collect(VirtualFile[] sourceRoots, Collection<File> sources) {
-        for (VirtualFile f : sourceRoots) {
-            if (f.isInLocalFileSystem()) {
+    void collect(File[] sourceRoots, Collection<File> sources) {
+        if (sourceRoots != null) {
+            for (File f : sourceRoots) {
                 if (f.isDirectory()) {
-                    collect(f.getChildren(), sources);
-                } else if (f.isValid() && f.getName().endsWith(extension)) {
-                    sources.add(VfsUtil.virtualToIoFile(f));
+                    collect(f.listFiles(), sources);
+                } else if (f.getName().endsWith(extension)) {
+                    sources.add(f);
                 }
             }
         }

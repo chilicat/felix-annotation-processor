@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/felix-annotation-processor.iml" filepath="$PROJECT_DIR$/felix-annotation-processor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/felix-scr-common.iml" filepath="$PROJECT_DIR$/felix-scr-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jps-plugin.iml" filepath="$PROJECT_DIR$/jps-plugin.iml" />
     </modules>
   </component>
 </project>

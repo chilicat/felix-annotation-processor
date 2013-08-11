@@ -10,7 +10,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
-import org.apache.felix.scrplugin.Log;
 import org.apache.felix.scrplugin.SCRDescriptorFailureException;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,15 +20,15 @@ import java.util.logging.Logger;
 /**
  * @author dkuffner
  */
-public final class ScrLogger implements Log {
+public final class ScrLoggerImpl implements ScrLogger {
 
     private final CompileContext context;
-    private final static Logger LOG = Logger.getLogger(ScrLogger.class.getName());
+    private final static Logger LOG = Logger.getLogger(ScrLoggerImpl.class.getName());
 
     private Module module;
     private boolean errorPrinted = false;
 
-    public ScrLogger(CompileContext context, Module module) {
+    public ScrLoggerImpl(CompileContext context, Module module) {
         this.context = context;
         this.module = module;
     }
@@ -115,6 +114,8 @@ public final class ScrLogger implements Log {
 
 
     public void error(String s) {
+        s = "Module [" + module.getName() + "]: " + s;
+
         errorPrinted = true;
         context.addMessage(CompilerMessageCategory.ERROR, s, null, 0, 0);
         LOG.log(Level.SEVERE, s);
@@ -125,6 +126,8 @@ public final class ScrLogger implements Log {
     }
 
     public void error(String s, String location, int i, int column) {
+        s = "Module [" + module.getName() + "]: " + s;
+
         errorPrinted = true;
         String url = urlForLocationString(location);
 
@@ -197,14 +200,14 @@ public final class ScrLogger implements Log {
 
     public void error(String s, Throwable throwable) {
         errorPrinted = true;
-        context.addMessage(CompilerMessageCategory.ERROR, s + " - " + throwable.getMessage(), null, 0, 0);
+        context.addMessage(CompilerMessageCategory.ERROR, "Module [" + module.getName() + "]: " + s + " - " + throwable.getMessage(), null, 0, 0);
         LOG.log(Level.WARNING, s, throwable);
     }
 
     public void error(Throwable throwable) {
         if (!(throwable instanceof SCRDescriptorFailureException)) {
             errorPrinted = true;
-            context.addMessage(CompilerMessageCategory.ERROR, throwable.getMessage(), null, 0, 0);
+            context.addMessage(CompilerMessageCategory.ERROR, "Module [" + module.getName() + "]: " + throwable.getMessage(), null, 0, 0);
             LOG.log(Level.WARNING, throwable.getLocalizedMessage(), throwable);
         }
     }

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="felix-annotation-processor:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/felix-annotation-processor/lib/</output-path>
+    <root id="archive" name="felix-annotation-processor.jar">
+      <element id="module-output" name="felix-annotation-processor" />
+    </root>
+  </artifact>
+</component>

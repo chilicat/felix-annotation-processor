@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="felix-common:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/felix-annotation-processor/lib/</output-path>
+    <root id="archive" name="felix-scr-common.jar">
+      <element id="module-output" name="felix-scr-common" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/asm-all.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/org.osgi.core.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/org.osgi.compendium.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/org.apache.felix.scr.generator.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

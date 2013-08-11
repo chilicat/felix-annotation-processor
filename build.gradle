@@ -12,14 +12,24 @@ dependencies {
     //scrAntLib group: "org.apache.felix", name: "org.apache.felix.scr.generator", version: "1.7.1-SNAPSHOT", changing: true
     scrAntLib 'org.apache.felix:org.apache.felix.scr.generator:1.8.0'
     scrAntLib 'org.osgi:org.osgi.compendium:4.3.1'
+
+    compile project('felix-scr-common')
+}
+
+task clean(type: Delete) {
+    delete file('libs')
 }
 
 task copyLibs(type: Sync) {
+
+    def pattern = /(.*)-\w+.*\.jar/
+
     from configurations.scrAntLib
     into file("libs")
+    rename pattern, '$1.jar'
 }
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
+    gradleVersion = '1.7'
 }

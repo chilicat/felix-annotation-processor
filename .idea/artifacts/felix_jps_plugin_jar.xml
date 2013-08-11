@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="felix-jps-plugin:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/felix-annotation-processor/lib/jps</output-path>
+    <root id="archive" name="felix-jps-plugin.jar">
+      <element id="module-output" name="jps-plugin" />
+    </root>
+  </artifact>
+</component>

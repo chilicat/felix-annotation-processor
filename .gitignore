@@ -5,3 +5,4 @@ felix-annotation-processor.zip
 .idea/workspace.xml
 libs/**
 .gradle
+fa-tmp
