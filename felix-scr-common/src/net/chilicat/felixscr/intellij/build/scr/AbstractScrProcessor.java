@@ -38,17 +38,6 @@ public abstract class AbstractScrProcessor {
     }
 
     public boolean execute() {
-        try {
-            return executeImpl();
-        } catch (RuntimeException e) {
-            getLogger().error("[" + getModuleName() + "] ScrProcessing Failed: " + e.getMessage(), e);
-            e.printStackTrace();
-
-        }
-        return false;
-    }
-
-    private boolean executeImpl() {
 
         try {
             final File classDir = this.getClassOutDir();
@@ -96,6 +85,13 @@ public abstract class AbstractScrProcessor {
             logger.error(e.getMessage(), e.getSourceLocation(), 0);
         } catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);
+        } catch (NullPointerException e) {
+            // https://issues.apache.org/jira/browse/FELIX-4192
+            // SCR Generator fails with a NPE in case a class level Reference doesn't define a referenceInterface
+            getLogger().error("[" + getModuleName() + "] ScrProcessing Failed: Please make sure that all class level references have a referenceInterface defined. Check general component validity. ", e);
+        } catch (RuntimeException e) {
+            getLogger().error("[" + getModuleName() + "] ScrProcessing Failed: " + e.getMessage(), e);
+            e.printStackTrace();
         }
         return false;
     }
