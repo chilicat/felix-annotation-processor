@@ -25,6 +25,10 @@ public class ScrProcessor extends AbstractScrProcessor {
 
     @Override
     protected File[] getModuleSourceRoots() {
+        return getModuleSourceRoots(module);
+    }
+
+    protected static File[] getModuleSourceRoots(Module module) {
         VirtualFile[] sourceRoots = ModuleRootManager.getInstance(module).getSourceRoots(false);
         File[] files = new File[sourceRoots.length];
         for (int i = 0; i < files.length; i++) {

@@ -1,109 +1,64 @@
 package net.chilicat.felixscr.intellij.jps;
 
-import net.chilicat.felixscr.intellij.build.scr.ScrLogger;
-import org.jetbrains.jps.incremental.MessageHandler;
+import net.chilicat.felixscr.intellij.build.scr.AbstractScrLogger;
+import org.jetbrains.jps.ModuleChunk;
+import org.jetbrains.jps.incremental.CompileContext;
 import org.jetbrains.jps.incremental.messages.BuildMessage;
 import org.jetbrains.jps.incremental.messages.CompilerMessage;
 
-import java.util.logging.Level;
+import java.io.File;
 import java.util.logging.Logger;
 
-public class ScrLoggerImpl implements ScrLogger {
+public class ScrLoggerImpl extends AbstractScrLogger {
 
-    private final MessageHandler messageHandler;
+    private final CompileContext context;
     private final String compilerName;
     private final Logger logger = Logger.getLogger(getClass().getName());
-    private boolean errorPrinted = false;
+    private final String moduleName;
+    private ModuleChunk moduleChunk;
 
-    public ScrLoggerImpl(MessageHandler messageHandler, String presentableName) {
-        this.messageHandler = messageHandler;
+    public ScrLoggerImpl(CompileContext context, ModuleChunk moduleChunk, String presentableName) {
+        this.context = context;
         this.compilerName = presentableName;
+        this.moduleName = moduleChunk.getName();
+        this.moduleChunk = moduleChunk;
     }
 
-    public boolean isErrorPrinted() {
-        return errorPrinted;
+    @Override
+    protected String getModuleName() {
+        return moduleName;
     }
 
-    public boolean isDebugEnabled() {
-        return false;
+    @Override
+    protected File getModuleOut() {
+        return moduleChunk.representativeTarget().getOutputDir();
     }
 
-    public void debug(String s) {
-        logger.log(Level.FINE, s);
+    @Override
+    protected File[] getModuleSourceRoots() {
+        return ScrProcessor.getModuleSourceRoots(moduleChunk);
     }
 
-    public void debug(String s, Throwable throwable) {
-        logger.log(Level.FINE, s, throwable);
-    }
+    @Override
+    protected void log(Level l, String message, Throwable t, String location, int row, int column) {
+        BuildMessage.Kind kind = BuildMessage.Kind.ERROR;
+        java.util.logging.Level jl = java.util.logging.Level.SEVERE;
 
-    public void debug(Throwable throwable) {
-        logger.log(Level.FINE, throwable.getMessage(), throwable);
-    }
-
-    public boolean isInfoEnabled() {
-        return true;
-    }
-
-    public void info(String s) {
-        messageHandler.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.INFO, s));
-    }
-
-    public void info(String s, Throwable throwable) {
-        messageHandler.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.INFO, s + " - Message: " + throwable.getMessage()));
-    }
-
-    public void info(Throwable throwable) {
-        info(throwable.getMessage());
-    }
-
-    public boolean isWarnEnabled() {
-        return true;
-    }
-
-    public void warn(String s) {
-        messageHandler.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.WARNING, s));
-    }
-
-    public void warn(String s, String s2, int i) {
-        messageHandler.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.WARNING, s, s2, i, i, 0, 0, 0));
-    }
-
-    public void warn(String s, String s2, int i, int i2) {
-        messageHandler.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.WARNING, s, s2, i, i, 0, 0, i2));
-    }
-
-    public void warn(String s, Throwable throwable) {
-        warn(s + " - Message: " + throwable.getMessage());
-    }
-
-    public void warn(Throwable throwable) {
-        warn(throwable.getMessage());
-    }
-
-    public boolean isErrorEnabled() {
-        return true;
-    }
-
-    public void error(String s) {
-        messageHandler.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.ERROR, s));
-        errorPrinted = true;
-    }
-
-    public void error(String s, String s2, int i) {
-        messageHandler.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.ERROR, s));
-        errorPrinted = true;
-    }
-
-    public void error(String s, String s2, int i, int i2) {
-        messageHandler.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.ERROR, s));
-        errorPrinted = true;
-    }
-
-    public void error(String s, Throwable throwable) {
-        error(s + " - Message: " + throwable.getMessage());
-    }
-
-    public void error(Throwable throwable) {
-        error(throwable.getMessage());
+        switch (l) {
+            case ERROR:
+                kind = BuildMessage.Kind.ERROR;
+                jl = java.util.logging.Level.SEVERE;
+                break;
+            case WARN:
+                kind = BuildMessage.Kind.WARNING;
+                jl = java.util.logging.Level.WARNING;
+                break;
+            case INFO:
+                kind = BuildMessage.Kind.INFO;
+                jl = java.util.logging.Level.INFO;
+                break;
+        }
+        context.processMessage(new CompilerMessage(compilerName, kind, message, location, (long) row, (long) row, (long) row, (long) column, (long) column));
+        logger.log(jl, message, t);
     }
 }

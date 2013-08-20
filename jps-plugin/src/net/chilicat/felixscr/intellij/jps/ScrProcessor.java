@@ -2,7 +2,9 @@ package net.chilicat.felixscr.intellij.jps;
 
 import net.chilicat.felixscr.intellij.build.scr.AbstractScrProcessor;
 import org.jetbrains.jps.ModuleChunk;
-import org.jetbrains.jps.incremental.CompileContext;
+import org.jetbrains.jps.model.java.JpsJavaDependenciesEnumerator;
+import org.jetbrains.jps.model.java.JpsJavaDependenciesRootsEnumerator;
+import org.jetbrains.jps.model.java.JpsJavaExtensionService;
 import org.jetbrains.jps.model.module.JpsModuleSourceRoot;
 
 import java.io.File;
@@ -12,12 +14,14 @@ import java.util.List;
 public class ScrProcessor extends AbstractScrProcessor {
 
     private ModuleChunk moduleChunk;
-    private CompileContext compileContext;
-
 
     @Override
     protected File[] getModuleSourceRoots() {
-        List<JpsModuleSourceRoot> sourceRoots = getModuleChunk().representativeTarget().getModule().getSourceRoots();
+        return getModuleSourceRoots(getModuleChunk());
+    }
+
+    protected static File[] getModuleSourceRoots(ModuleChunk module) {
+        List<JpsModuleSourceRoot> sourceRoots = module.representativeTarget().getModule().getSourceRoots();
         File[] files = new File[sourceRoots.size()];
         for (int i = 0; i < sourceRoots.size(); i++) {
             files[i] = sourceRoots.get(i).getFile();
@@ -37,7 +41,12 @@ public class ScrProcessor extends AbstractScrProcessor {
 
     @Override
     protected void collectClasspath(Collection<String> classPath) {
-        // Collect all transitive dependencies.
+        JpsJavaExtensionService service = JpsJavaExtensionService.getInstance();
+        JpsJavaDependenciesEnumerator enr = service.enumerateDependencies(moduleChunk.getModules());
+        JpsJavaDependenciesRootsEnumerator classes = enr.recursively().classes();
+        for (File f : classes.getRoots()) {
+            classPath.add(f.getAbsolutePath());
+        }
     }
 
     public void setModuleChunk(ModuleChunk moduleChunk) {
@@ -46,13 +55,5 @@ public class ScrProcessor extends AbstractScrProcessor {
 
     public ModuleChunk getModuleChunk() {
         return moduleChunk;
-    }
-
-    public void setCompileContext(CompileContext compileContext) {
-        this.compileContext = compileContext;
-    }
-
-    public CompileContext getCompileContext() {
-        return compileContext;
     }
 }

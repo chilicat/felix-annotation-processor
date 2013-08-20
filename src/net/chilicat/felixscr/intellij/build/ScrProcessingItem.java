@@ -1,8 +1,12 @@
 package net.chilicat.felixscr.intellij.build;
 
-import com.intellij.openapi.compiler.*;
+import com.intellij.openapi.compiler.CompileContext;
+import com.intellij.openapi.compiler.FileProcessingCompiler;
+import com.intellij.openapi.compiler.TimestampValidityState;
+import com.intellij.openapi.compiler.ValidityState;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
+import net.chilicat.felixscr.intellij.build.scr.ScrLogger;
 import net.chilicat.felixscr.intellij.build.scr.ScrLoggerImpl;
 import net.chilicat.felixscr.intellij.build.scr.ScrProcessor;
 import net.chilicat.felixscr.intellij.settings.ScrSettings;
@@ -22,6 +26,7 @@ class ScrProcessingItem implements FileProcessingCompiler.ProcessingItem {
         this.latestModified = latestModified;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @NotNull
     public VirtualFile getFile() {
         return module.getModuleFile();
@@ -36,6 +41,10 @@ class ScrProcessingItem implements FileProcessingCompiler.ProcessingItem {
         ScrProcessor scrProcessor = new ScrProcessor(context, module);
         scrProcessor.setLogger(new ScrLoggerImpl(context, module));
         scrProcessor.setSettings(settings);
+
+        ScrLogger logger = scrProcessor.getLogger();
+        logger.warn("Felix SCR annotation compiler has problems with JDK 7. It is recommended to enable external build. Please change compiler settings to use external builds");
+
         return scrProcessor.execute();
     }
 }

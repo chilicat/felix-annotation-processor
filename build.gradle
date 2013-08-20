@@ -9,11 +9,11 @@ configurations {
 }
 
 dependencies {
-    //scrAntLib group: "org.apache.felix", name: "org.apache.felix.scr.generator", version: "1.7.1-SNAPSHOT", changing: true
-    scrAntLib 'org.apache.felix:org.apache.felix.scr.generator:1.8.0'
+    scrAntLib group: "org.apache.felix", name: "org.apache.felix.scr.generator", version: "1.8.1-SNAPSHOT", changing: true
+    //scrAntLib 'org.apache.felix:org.apache.felix.scr.generator:1.8.0'
     scrAntLib 'org.osgi:org.osgi.compendium:4.3.1'
 
-    compile project('felix-scr-common')
+    //compile project('felix-scr-common')
 }
 
 task clean(type: Delete) {

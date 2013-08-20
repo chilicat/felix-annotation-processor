@@ -80,7 +80,12 @@ public abstract class AbstractScrProcessor {
             return !logger.isErrorPrinted();
 
         } catch (SCRDescriptorFailureException e) {
-            logger.error(e.getMessage(), e);
+            if (e.getMessage().equals("No annotation processors found in classpath.")) {
+                logger.info(e.getMessage());
+                return true;
+            } else {
+                logger.error(e.getMessage(), e);
+            }
         } catch (SCRDescriptorException e) {
             logger.error(e.getMessage(), e.getSourceLocation(), 0);
         } catch (MalformedURLException e) {
@@ -91,7 +96,6 @@ public abstract class AbstractScrProcessor {
             getLogger().error("[" + getModuleName() + "] ScrProcessing Failed: Please make sure that all class level references have a referenceInterface defined. Check general component validity. ", e);
         } catch (RuntimeException e) {
             getLogger().error("[" + getModuleName() + "] ScrProcessing Failed: " + e.getMessage(), e);
-            e.printStackTrace();
         }
         return false;
     }
