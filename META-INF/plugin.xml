@@ -31,7 +31,7 @@
 
         <p>
             <strong>What is supported:</strong>
-            <p>The plugin currently does support only Felix Annotations 1.6.0.</p>
+            <p>The plugin currently supports only Felix Annotations 1.9.0 or greater</p>
         </p>
         <p>
             <strong>What is not supported</strong>
@@ -46,6 +46,13 @@
 
     <change-notes>
         <![CDATA[
+            <p>
+                <strong>Version 1.2.1</strong>
+                <ul>
+                     <li>Supports External build functionality. The external build also solves JDK 7 issues on Mac OSX</li>
+                     <li>Bugfix: Do not delete existing component files.</li>
+                </ul>
+            </p>
             <p>
                 <strong>Version 1.2</strong>
                 <ul>

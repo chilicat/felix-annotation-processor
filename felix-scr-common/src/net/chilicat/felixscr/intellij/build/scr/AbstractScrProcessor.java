@@ -101,12 +101,15 @@ public abstract class AbstractScrProcessor {
     }
 
     private void deleteServiceComponentXMLFiles(File classDir, ScrLogger logger) {
+
+        final Set<String> nonDelete = collectNonDeletes();
+
         File xmlDir = new File(classDir, "OSGI-INF");
         if (xmlDir.exists() && xmlDir.isDirectory()) {
             File[] files = xmlDir.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (file.getName().endsWith(".xml")) {
+                    if (!nonDelete.contains(file.getName()) && file.getName().endsWith(".xml")) {
                         logger.debug("Delete service xml: " + file.getAbsolutePath());
                         if (!file.delete()) {
                             logger.warn("Cannot delete service xml: " + file.getAbsolutePath());
@@ -115,6 +118,32 @@ public abstract class AbstractScrProcessor {
                 }
             }
         }
+    }
+
+    /**
+     * Collects a list of file which are not allowed to be deleted.
+     *
+     * @return a set of files.
+     */
+    private Set<String> collectNonDeletes() {
+
+        final File[] sourceRoots = getModuleSourceRoots();
+        final Set<String> nonDelete = new HashSet<String>();
+
+        for (File sourceRoot : sourceRoots) {
+            File file = new File(sourceRoot, "OSGI-INF");
+            if (file.exists()) {
+                File[] files = file.listFiles();
+                if (files != null) {
+                    for (File a : files) {
+                        nonDelete.add(a.getName());
+                    }
+
+                }
+            }
+        }
+
+        return nonDelete;
     }
 
     private Collection<Source> getSources() {
