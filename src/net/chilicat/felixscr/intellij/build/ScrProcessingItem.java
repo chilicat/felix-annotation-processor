@@ -39,7 +39,7 @@ class ScrProcessingItem implements FileProcessingCompiler.ProcessingItem {
     public boolean execute(CompileContext context) {
         context.getProgressIndicator().setText("Felix SCR for " + module.getName());
         ScrProcessor scrProcessor = new ScrProcessor(context, module);
-        scrProcessor.setLogger(new ScrLoggerImpl(context, module));
+        scrProcessor.setLogger(new ScrLoggerImpl(context, module, settings.isDebugLogging()));
         scrProcessor.setSettings(settings);
 
         ScrLogger logger = scrProcessor.getLogger();

@@ -20,10 +20,19 @@ public class ScrSettingsImpl implements PersistentStateComponent<ScrSettingsImpl
     private boolean generateAccessors = true;
     private boolean optimizedBuild = true;
     private boolean scanClasses = false;
-
+    private boolean debugLogging;
 
     private String spec = SPEC_1_1;
     private ManifestPolicy manifestPolicy = ManifestPolicy.overwrite;
+
+
+    public void setDebugLogging(boolean debug) {
+        this.debugLogging = debug;
+    }
+
+    public boolean isDebugLogging() {
+        return this.debugLogging;
+    }
 
     public boolean isOptimizedBuild() {
         return optimizedBuild;

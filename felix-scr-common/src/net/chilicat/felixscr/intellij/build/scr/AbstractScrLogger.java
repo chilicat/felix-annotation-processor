@@ -6,6 +6,11 @@ import java.util.logging.Logger;
 public abstract class AbstractScrLogger implements ScrLogger {
 
     private boolean errorPrinted = false;
+    private final boolean debugLogging;
+
+    protected AbstractScrLogger(boolean debugLogging) {
+        this.debugLogging = debugLogging;
+    }
 
     public void info(String s) {
         info(s, null);
@@ -62,7 +67,7 @@ public abstract class AbstractScrLogger implements ScrLogger {
     }
 
     public boolean isDebugEnabled() {
-        return false;
+        return true;
     }
 
     public void debug(String s) {
@@ -71,6 +76,9 @@ public abstract class AbstractScrLogger implements ScrLogger {
 
     public void debug(String s, Throwable throwable) {
         Logger.getLogger(getClass().getName()).log(java.util.logging.Level.FINE, s, throwable);
+        if (debugLogging) {
+            info(s, throwable);
+        }
     }
 
     public void debug(Throwable throwable) {

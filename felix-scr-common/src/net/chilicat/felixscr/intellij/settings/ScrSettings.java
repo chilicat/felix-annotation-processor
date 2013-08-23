@@ -34,4 +34,9 @@ public interface ScrSettings {
     boolean isScanClasses();
 
     void setScanClasses(boolean scanClasses);
+
+    void setDebugLogging(boolean debug);
+
+    boolean isDebugLogging();
+
 }

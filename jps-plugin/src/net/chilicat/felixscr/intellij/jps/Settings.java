@@ -21,6 +21,14 @@ public class Settings extends JpsElementBase<Settings> implements ScrSettings {
     public Settings() {
     }
 
+    public void setDebugLogging(boolean debug) {
+        state.debugLogging = debug;
+    }
+
+    public boolean isDebugLogging() {
+        return state.debugLogging;
+    }
+
     public boolean isEnabled() {
         return state.enabled;
     }
@@ -94,6 +102,7 @@ public class Settings extends JpsElementBase<Settings> implements ScrSettings {
         throw new UnsupportedOperationException("applyChanges are not supported.");
     }
 
+
     public static class State {
         public boolean enabled = true;
         public boolean strictMode = true;
@@ -101,6 +110,7 @@ public class Settings extends JpsElementBase<Settings> implements ScrSettings {
         public boolean optimizedBuild = true;
         public boolean scanClasses = false;
         public ManifestPolicy manifestPolicy = ManifestPolicy.overwrite;
+        public boolean debugLogging = false;
         private String spec = "1.1";
     }
 }

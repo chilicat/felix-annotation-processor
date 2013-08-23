@@ -9,6 +9,7 @@ import org.jetbrains.jps.model.module.JpsModuleSourceRoot;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ScrProcessor extends AbstractScrProcessor {
@@ -42,8 +43,8 @@ public class ScrProcessor extends AbstractScrProcessor {
     @Override
     protected void collectClasspath(Collection<String> classPath) {
         JpsJavaExtensionService service = JpsJavaExtensionService.getInstance();
-        JpsJavaDependenciesEnumerator enr = service.enumerateDependencies(moduleChunk.getModules());
-        JpsJavaDependenciesRootsEnumerator classes = enr.recursively().classes();
+        JpsJavaDependenciesEnumerator enr = service.enumerateDependencies(Collections.singleton(moduleChunk.representativeTarget().getModule()));
+        JpsJavaDependenciesRootsEnumerator classes = enr.productionOnly().withoutSdk().recursively().classes();
         for (File f : classes.getRoots()) {
             classPath.add(f.getAbsolutePath());
         }

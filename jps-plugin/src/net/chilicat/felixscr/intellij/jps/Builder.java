@@ -29,12 +29,24 @@ public class Builder extends BuilderService {
             JPSSCRExtensionService instance = JPSSCRExtensionService.getInstance();
             Settings settings = instance.getSettings(compileContext.getProjectDescriptor().getProject());
 
+            ScrLoggerImpl logger = new ScrLoggerImpl(compileContext, moduleChunk, getPresentableName(), settings.isDebugLogging());
+
+            // Skip tests.
+            if (moduleChunk.containsTests()) {
+                logger.debug("Skip test compile");
+                return ExitCode.NOTHING_DONE;
+            }
+
+            logger.debug("Settings enabled:" + settings.isEnabled());
+            logger.debug("Has Dirty files:" + holder.hasDirtyFiles());
+            logger.debug("Has removed files:" + holder.hasRemovedFiles());
+
             if (settings.isEnabled() && (holder.hasDirtyFiles() || holder.hasRemovedFiles())) {
 
                 compileContext.processMessage(new ProgressMessage(getPresentableName() + " [" + moduleChunk.getName() + "]"));
 
                 ScrProcessor p = new ScrProcessor();
-                p.setLogger(new ScrLoggerImpl(compileContext, moduleChunk, getPresentableName()));
+                p.setLogger(logger);
                 p.setSettings(settings);
                 p.setModuleChunk(moduleChunk);
 
@@ -46,6 +58,7 @@ public class Builder extends BuilderService {
 
             }
 
+            logger.debug("Nothing to do.");
             return ExitCode.NOTHING_DONE;
 
         }

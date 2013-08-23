@@ -46,6 +46,8 @@ public abstract class AbstractScrProcessor {
                 return false;
             }
 
+            logger.debug("Class dir: " + classDir.getPath());
+
             deleteServiceComponentXMLFiles(classDir, logger);
 
 
@@ -104,9 +106,17 @@ public abstract class AbstractScrProcessor {
 
         final Set<String> nonDelete = collectNonDeletes();
 
+        logger.debug("Preserve files: " + Arrays.toString(nonDelete.toArray()));
+
         File xmlDir = new File(classDir, "OSGI-INF");
+
+        logger.debug("OSGI-INF exists: " + xmlDir.exists() + " Is dir: " + xmlDir.isDirectory());
+
         if (xmlDir.exists() && xmlDir.isDirectory()) {
             File[] files = xmlDir.listFiles();
+
+            logger.debug("OSGI-INF has files: " + (files != null));
+
             if (files != null) {
                 for (File file : files) {
                     if (!nonDelete.contains(file.getName()) && file.getName().endsWith(".xml")) {
@@ -183,6 +193,9 @@ public abstract class AbstractScrProcessor {
 
     private void updateManifest(Result result, ScrLogger logger) {
         File manifest = new File(this.getClassOutDir(), "/META-INF/MANIFEST.MF");
+
+        logger.debug("Update Manifest, Has manifest: " + manifest.exists() + " SCR Comps: " + !result.getScrFiles().isEmpty());
+
         if (manifest.exists() && !result.getScrFiles().isEmpty()) {
             final String componentLine = "OSGI-INF/*";
 
@@ -193,16 +206,19 @@ public abstract class AbstractScrProcessor {
                     m = new Manifest(in);
                     switch (settings.getManifestPolicy()) {
                         case overwrite:
+                            logger.debug("Overwrite Manifest policy");
                             m.getMainAttributes().putValue("Service-Component", componentLine);
                             break;
                         case merge:
+                            logger.debug("Merge Manifest policy");
                             String value = m.getMainAttributes().getValue("Service-Component");
                             if (value == null || value.isEmpty()) {
                                 m.getMainAttributes().putValue("Service-Component", componentLine);
                             } else {
-                                m.getMainAttributes().putValue("Service-Component", addServiceComponentTo(value, componentLine));
+                                String merged = addServiceComponentTo(value, componentLine);
+                                logger.debug("merged value: " + merged);
+                                m.getMainAttributes().putValue("Service-Component", merged);
                             }
-
                             break;
                     }
                 } finally {

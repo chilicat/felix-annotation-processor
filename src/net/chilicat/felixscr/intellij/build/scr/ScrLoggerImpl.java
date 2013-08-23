@@ -15,7 +15,8 @@ public class ScrLoggerImpl extends AbstractScrLogger {
 
     private Module module;
 
-    public ScrLoggerImpl(CompileContext context, Module module) {
+    public ScrLoggerImpl(CompileContext context, Module module, boolean debug) {
+        super(debug);
         this.context = context;
         this.module = module;
     }

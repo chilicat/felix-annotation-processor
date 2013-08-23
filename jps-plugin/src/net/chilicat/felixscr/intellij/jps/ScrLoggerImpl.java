@@ -17,7 +17,8 @@ public class ScrLoggerImpl extends AbstractScrLogger {
     private final String moduleName;
     private ModuleChunk moduleChunk;
 
-    public ScrLoggerImpl(CompileContext context, ModuleChunk moduleChunk, String presentableName) {
+    public ScrLoggerImpl(CompileContext context, ModuleChunk moduleChunk, String presentableName, boolean debug) {
+        super(debug);
         this.context = context;
         this.compilerName = presentableName;
         this.moduleName = moduleChunk.getName();
