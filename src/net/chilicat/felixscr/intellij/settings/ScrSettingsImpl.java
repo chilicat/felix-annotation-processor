@@ -19,11 +19,9 @@ public class ScrSettingsImpl implements PersistentStateComponent<ScrSettingsImpl
     private boolean strictMode = true;
     private boolean generateAccessors = true;
     private boolean optimizedBuild = true;
-    private boolean scanClasses = false;
     private boolean debugLogging;
 
     private String spec = SPEC_1_1;
-    private ManifestPolicy manifestPolicy = ManifestPolicy.overwrite;
 
 
     public void setDebugLogging(boolean debug) {
@@ -89,22 +87,6 @@ public class ScrSettingsImpl implements PersistentStateComponent<ScrSettingsImpl
 
     public boolean isSpec(String spec) {
         return spec.equals(getSpec());
-    }
-
-    public void setManifestPolicy(ManifestPolicy policy) {
-        this.manifestPolicy = policy;
-    }
-
-    public ManifestPolicy getManifestPolicy() {
-        return manifestPolicy;
-    }
-
-    public boolean isScanClasses() {
-        return scanClasses;
-    }
-
-    public void setScanClasses(boolean scanClasses) {
-        this.scanClasses = scanClasses;
     }
 }
 

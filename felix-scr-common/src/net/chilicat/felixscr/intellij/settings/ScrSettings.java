@@ -27,14 +27,6 @@ public interface ScrSettings {
 
     boolean isSpec(String spec);
 
-    void setManifestPolicy(ManifestPolicy policy);
-
-    ManifestPolicy getManifestPolicy();
-
-    boolean isScanClasses();
-
-    void setScanClasses(boolean scanClasses);
-
     void setDebugLogging(boolean debug);
 
     boolean isDebugLogging();

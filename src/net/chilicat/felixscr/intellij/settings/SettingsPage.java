@@ -15,10 +15,8 @@ public class SettingsPage {
     private JCheckBox strictModeBox;
     private JComboBox specBox;
     private JPanel page;
-    private JComboBox manifestPolicyBox;
     private JCheckBox generateAccessorsBox;
     private JCheckBox optimizedBuildBox;
-    private JCheckBox scanClasses;
     private JCheckBox debugLoggingBox;
     private boolean modified = false;
 
@@ -37,9 +35,7 @@ public class SettingsPage {
         list.add(generateAccessorsBox);
         list.add(strictModeBox);
         list.add(specBox);
-        list.add(manifestPolicyBox);
         list.add(optimizedBuildBox);
-        list.add(scanClasses);
         list.add(debugLoggingBox);
 
         ModifyUpdateListener l = new ModifyUpdateListener();
@@ -70,11 +66,8 @@ public class SettingsPage {
         settingsState.setSpec(specBox.getSelectedItem().toString());
         settingsState.setGenerateAccessors(generateAccessorsBox.isSelected());
         settingsState.setOptimizedBuild(optimizedBuildBox.isSelected());
-        settingsState.setScanClasses(scanClasses.isSelected());
         settingsState.setDebugLogging(debugLoggingBox.isSelected());
 
-        ManifestPolicy manifestPolicy = ManifestPolicy.valueOf(manifestPolicyBox.getSelectedItem().toString());
-        settingsState.setManifestPolicy(manifestPolicy);
         modified = false;
     }
 
@@ -82,10 +75,8 @@ public class SettingsPage {
         enabledBox.setSelected(settingsState.isEnabled());
         strictModeBox.setSelected(settingsState.isStrictMode());
         specBox.setSelectedItem(settingsState.getSpec());
-        manifestPolicyBox.setSelectedItem(settingsState.getManifestPolicy().name());
         generateAccessorsBox.setSelected(settingsState.isGenerateAccessors());
         optimizedBuildBox.setSelected(settingsState.isOptimizedBuild());
-        scanClasses.setSelected(settingsState.isScanClasses());
         debugLoggingBox.setSelected(settingsState.isDebugLogging());
         modified = false;
     }

@@ -158,19 +158,11 @@ public abstract class AbstractScrProcessor {
 
     private Collection<Source> getSources() {
         final Collection<Source> sources;
-
-
-        if (settings.isScanClasses()) {
-
-            File out = getClassOutDir();
-            if (out != null) {
-                sources = ScrSource.toSourcesCollection(new File[]{out}, ".class");
-            } else {
-                sources = Collections.emptyList();
-            }
+        File out = getClassOutDir();
+        if (out != null) {
+            sources = ScrSource.toSourcesCollection(new File[]{out}, ".class");
         } else {
-            final File[] sourceRoots = getModuleSourceRoots();
-            sources = ScrSource.toSourcesCollection(sourceRoots, ".java");
+            sources = Collections.emptyList();
         }
         return sources;
     }
@@ -204,23 +196,8 @@ public abstract class AbstractScrProcessor {
                 Manifest m = null;
                 try {
                     m = new Manifest(in);
-                    switch (settings.getManifestPolicy()) {
-                        case overwrite:
-                            logger.debug("Overwrite Manifest policy");
-                            m.getMainAttributes().putValue("Service-Component", componentLine);
-                            break;
-                        case merge:
-                            logger.debug("Merge Manifest policy");
-                            String value = m.getMainAttributes().getValue("Service-Component");
-                            if (value == null || value.isEmpty()) {
-                                m.getMainAttributes().putValue("Service-Component", componentLine);
-                            } else {
-                                String merged = addServiceComponentTo(value, componentLine);
-                                logger.debug("merged value: " + merged);
-                                m.getMainAttributes().putValue("Service-Component", merged);
-                            }
-                            break;
-                    }
+                    logger.debug("Overwrite Manifest policy");
+                    m.getMainAttributes().putValue("Service-Component", componentLine);
                 } finally {
                     in.close();
                 }
