@@ -19,6 +19,7 @@ public class ScrSettingsImpl implements PersistentStateComponent<ScrSettingsImpl
     private boolean strictMode = true;
     private boolean generateAccessors = true;
     private boolean optimizedBuild = true;
+    private boolean incremental = false;
     private boolean debugLogging;
 
     private String spec = SPEC_1_1;
@@ -78,6 +79,14 @@ public class ScrSettingsImpl implements PersistentStateComponent<ScrSettingsImpl
 
     public void loadState(ScrSettingsImpl scrSettings) {
         XmlSerializerUtil.copyBean(scrSettings, this);
+    }
+
+    public boolean isIncremental() {
+        return incremental;
+    }
+
+    public void setIncremental(boolean incremental) {
+        this.incremental = incremental;
     }
 
     @NotNull

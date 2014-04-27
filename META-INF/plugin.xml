@@ -4,7 +4,7 @@
 
     <idea-version since-build="123.155"/>
 
-    <version>1.5</version>
+    <version>1.6</version>
 
     <name>Felix SCR Annotation Processor</name>
     <description>
@@ -46,6 +46,13 @@
 
     <change-notes>
         <![CDATA[
+            <p>
+                <strong>Version 1.6</strong>
+                <ul>
+                     <li>Upgraded SCR generator to stable version 1.8.2.</li>
+                     <li>Added new settings option to enable incremental build.</li>
+                </ul>
+            </p>
             <p>
                 <strong>Version 1.5</strong>
                 <ul>

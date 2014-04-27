@@ -82,6 +82,14 @@ public class Settings extends JpsElementBase<Settings> implements ScrSettings {
         return state.spec.equals(spec);
     }
 
+    public boolean isIncremental() {
+        return state.incremental;
+    }
+
+    public void setIncremental(boolean incremental) {
+        state.incremental = incremental;
+    }
+
     public void setManifestPolicy(ManifestPolicy policy) {
         state.manifestPolicy = policy;
 
@@ -112,5 +120,6 @@ public class Settings extends JpsElementBase<Settings> implements ScrSettings {
         public ManifestPolicy manifestPolicy = ManifestPolicy.overwrite;
         public boolean debugLogging = false;
         private String spec = "1.1";
+        public boolean incremental = false;
     }
 }

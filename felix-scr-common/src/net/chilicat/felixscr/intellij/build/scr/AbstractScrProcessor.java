@@ -63,6 +63,7 @@ public abstract class AbstractScrProcessor {
             opt.setStrictMode(settings.isStrictMode());
             opt.setProperties(new HashMap<String, String>());
             opt.setOutputDirectory(classDir);
+            opt.setIncremental(settings.isIncremental());
 
             Project project = new Project();
             project.setClassLoader(createClassLoader(classPath));
@@ -189,7 +190,7 @@ public abstract class AbstractScrProcessor {
         logger.debug("Update Manifest, Has manifest: " + manifest.exists() + " SCR Comps: " + !result.getScrFiles().isEmpty());
 
         if (manifest.exists() && !result.getScrFiles().isEmpty()) {
-            final String componentLine = "OSGI-INF/*";
+            final String componentLine = "OSGI-INF/*.xml";
 
             try {
                 FileInputStream in = new FileInputStream(manifest);
@@ -213,7 +214,7 @@ public abstract class AbstractScrProcessor {
                 logger.error(e);
             }
         } else {
-            logger.warn("Module '" + getModuleName() + "' has no manifest. Couldn't add component descriptor");
+            logger.info("Module '" + getModuleName() + "' has no manifest. Couldn't add component descriptor");
         }
     }
 

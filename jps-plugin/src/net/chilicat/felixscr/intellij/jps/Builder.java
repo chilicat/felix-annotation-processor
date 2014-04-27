@@ -2,13 +2,16 @@ package net.chilicat.felixscr.intellij.jps;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.ModuleChunk;
+import org.jetbrains.jps.builders.BuildTarget;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
 import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor;
 import org.jetbrains.jps.incremental.*;
 import org.jetbrains.jps.incremental.messages.ProgressMessage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Builder extends BuilderService {
@@ -19,10 +22,12 @@ public class Builder extends BuilderService {
 
     }
 
+
     private static class MyModuleLevelBuilder extends ModuleLevelBuilder {
         private MyModuleLevelBuilder() {
             super(BuilderCategory.CLASS_POST_PROCESSOR);
         }
+
 
         @Override
         public ExitCode build(CompileContext compileContext, ModuleChunk moduleChunk, DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget> holder, OutputConsumer outputConsumer) throws ProjectBuildException, IOException {
