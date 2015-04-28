@@ -46,7 +46,10 @@ public class ScrProcessor extends AbstractScrProcessor {
         JpsJavaDependenciesEnumerator enr = service.enumerateDependencies(Collections.singleton(moduleChunk.representativeTarget().getModule()));
         JpsJavaDependenciesRootsEnumerator classes = enr.productionOnly().withoutSdk().recursively().classes();
         for (File f : classes.getRoots()) {
-            classPath.add(f.getAbsolutePath());
+            // filter out non-Java classpath entries, because Felix fails processing them
+            if (f.getName().endsWith(".class") || f.getName().endsWith(".jar") || f.isDirectory()) {
+                classPath.add(f.getAbsolutePath());
+            }
         }
     }
 
